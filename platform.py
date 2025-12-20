@@ -4,12 +4,13 @@ import pygame
 
 import message
 import rules
+from Config import Screen
 
 rule = rules.Rule()
 
 
 class Platform:
-    def __init__(self, x=1280, y=None, width=220, height=25, color=(100, 100, 100)):
+    def __init__(self, x=Screen.ScreenX, y=None, width=220, height=25, color=(100, 100, 100)):
         self.rule = rules.Rule()
         self.y = random.randint(100, 300) if y is None else y
         self.x = x
@@ -28,7 +29,7 @@ class Platform:
         if self.is_active:
             self.rect.x -= self.speed_x
             self.rect.y += self.speed_y
-        if self.rect.x < 0 - self.width or self.rect.y > 720 + self.height:
+        if self.rect.x < 0 - self.width or self.rect.y > Screen.ScreenY + self.height:
             self.is_active = False
 
     def draw(self, screen):
@@ -216,6 +217,7 @@ class SpDownPlatform(Platform):
         self.message.font_draw("", "DOWN", screen, self.rect.x + self.width + 5, self.rect.y - 10, (225, 45, 3))
 
 
+"""简单平台"""
 class SIPrightMovePlatform(Platform):
     def __init__(self):
         self.x=0
@@ -228,7 +230,7 @@ class SIPrightMovePlatform(Platform):
         if self.is_active:
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
-        if self.rect.x > 1280 or self.rect.y > 720 + self.height:
+        if self.rect.x > Screen.ScreenX or self.rect.y > Screen.ScreenY + self.height:
             self.is_active = False
 
 class SPrightFrpPlatform(SpFragilePlatform):
@@ -244,7 +246,7 @@ class SPrightFrpPlatform(SpFragilePlatform):
         if self.is_active:
             self.rect.x += self.speed_x
             self.rect.y += self.speed_y
-        if self.rect.x > 1280 or self.rect.y > 720 + self.height:
+        if self.rect.x > Screen.ScreenX or self.rect.y > Screen.ScreenY + self.height:
             self.is_active = False
         
 

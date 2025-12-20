@@ -29,6 +29,12 @@ class Rule:
         elif score <=50000:
             cls.stage = 6
 
+    @classmethod
+    def again(cls):
+        cls.score = 0
+        cls.stage = 1
+        cls.boss_stage = 0
+        cls.if_boss = False
     """地图变化"""
 
     @classmethod
@@ -78,7 +84,7 @@ class Rule:
         elif cls.stage ==5 and not cls.if_boss:
             return 3
         elif cls.stage == 5 and cls.if_boss:
-            return 2
+            return 1
         elif cls.stage <=6:
             return 3
         return None

@@ -3,6 +3,7 @@ import random
 import pygame
 
 import rules
+from Config import Screen
 from message import Message
 
 
@@ -11,7 +12,7 @@ class Trap:
     screen_pos_width = 1280
     screen_pos_height = 720
 
-    def __init__(self, player, screen, x=None, y=0, width=20, height=720, damage=10, color=(128, 128, 128),
+    def __init__(self, player, screen, x=None, y=0, width=20, height=Screen.ScreenY, damage=10, color=(128, 128, 128),
                  speed_x=0, speed_y=0, ):
         self.x = random.randint(0, self.screen_pos_width) if x is None else x
         self.y = y
@@ -113,7 +114,7 @@ class TarpManager:
 
 
 class Laser(Trap):
-    def __init__(self, player, screen, x=None, y=0, width=20, height=720, damage=10, color=(128, 128, 128)):
+    def __init__(self, player, screen, x=None, y=0, width=20, height=Screen.ScreenY, damage=10, color=(128, 128, 128)):
         self.color = (214, 212, 71)
         super().__init__(player=player, color=self.color, screen=screen, width=width, height=height, damage=damage)
         self.life_cycle = 70 + 5 * self.rule.stage
@@ -152,9 +153,9 @@ class MoveLaser(Laser):
 
     def update(self):
         self.rect.move_ip(self.speed_x, self.speed_y)
-        if self.rect.right < 0:
+        if self.rect.right < 20:
             self.is_active = False
-        elif self.rect.right > self.screen_pos_width:
+        elif self.rect.right > self.screen_pos_width-20:
             self.is_active = False
         super().update()
 
@@ -169,7 +170,7 @@ class MoveLaser(Laser):
 class LockLaser(Laser):
     def __init__(self, player, screen):
         super().__init__(player, screen)
-        self.rect.x = random.randint(player.pos[0] - 20, player.pos[0] + 20)
+        self.rect.x = max(min(random.randint(player.pos[0] - 250, player.pos[0] + 250),self.screen_pos_width-50),50)
         self.advance_speed_x = 0.8 + self.rule.stage * 0.3
         self.speed_x = 0
         self.life_cycle = 20 + 5 * self.rule.stage
@@ -198,7 +199,7 @@ class RectXLaser(Trap):
             height=20,
             damage=10,
             color=(214, 212, 71),
-            speed_y=2
+            speed_y=3
         )
 
         self.life_cycle = 75 + 5 * self.rule.stage

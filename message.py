@@ -1,11 +1,11 @@
+
 import pygame
 
 
 class Message:
-    def __init__(self):
-        self.default_font = pygame.font.SysFont(None, 24)
 
-    def font_draw(self, name, text, screen, x, y, color=(0, 0, 0)):
+    def font_draw(self, name, text, screen, x, y, color=(0, 0, 0),font_size=24):
+        default_font=pygame.font.SysFont(None, font_size)
         vel_text = f"{name}{text}"
-        vel_surface = self.default_font.render(vel_text, True, color)
+        vel_surface = default_font.render(vel_text, True, color)
         screen.blit(vel_surface, (x, y))

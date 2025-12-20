@@ -5,10 +5,13 @@ import pygame
 import message
 import trap
 import rules
+from Config import Screen
+
+
 class Enemy:
     def __init__(self, screen, player, traps, platform, x=None, y=None, width=50, height=50, radius=None,
                  color=(0, 0, 0)):
-        x = random.randint(0, 1280 - 1) if x is None else x
+        x = random.randint(0, Screen.ScreenX - 1) if x is None else x
         y = random.randint(0, 720 - 1) if y is None else y
         self.radius = 20 if radius is None else radius
 
@@ -48,6 +51,8 @@ class Enemy:
         else:
             pygame.draw.rect(self.screen, self.color, (self.rect.x, self.rect.y))
 
+    def apply_damage(self):
+        pass
 
 class EnemyManager:
     def __init__(self, player, screen, traps, platform):
@@ -87,7 +92,11 @@ class EnemyManager:
         self.enemies.append(ad)
 
     def check_collision(self, player_rect):
-        pass
+        for i in self.enemies:
+            if i.rect.colliderect(player_rect):
+                i.apply_damage()
+
+
 
 
 class BossStageFirst(Enemy):
@@ -97,11 +106,12 @@ class BossStageFirst(Enemy):
         self.radius = 50
         self.rect.x = 640
         self.rect.y = 120
-        self.damage_counter = 200
+        self.damage_counter = 120
         self.if_tx = False
         self.tx_radius = self.radius
         self.create_platform_counter=0
         self.create_platform_cycle=130
+
 
     def update(self):
         rules.Rule.if_boss = True
@@ -116,10 +126,14 @@ class BossStageFirst(Enemy):
             rules.Rule.if_boss = False
         self.platform_create()
 
+
     def create_cycle(self):
-        pygame.draw.circle(self.screen, (255, 37, 37), (self.rect.x, self.rect.y), radius=self.tx_radius, width=5)
-        self.tx_radius += 5
-        if self.tx_radius >= 200+(250-self.health):
+        a=pygame.draw.circle(self.screen, (255, 37, 37), (self.rect.x, self.rect.y), radius=self.tx_radius, width=5)
+        self.tx_radius += 6
+
+        if a.colliderect(self.player.get_rect()):
+            self.trapManager.advance_create(trap.LockLaser(screen=self.screen, player=self.player))
+        if self.tx_radius >= 220+(250-self.health):
             self.if_tx = False
             self.tx_radius = self.radius
 
@@ -127,6 +141,7 @@ class BossStageFirst(Enemy):
         if self.if_tx:
             self.create_cycle()
         super().draw()
+
 
     def call_laser(self):
         fcolor = self.color
@@ -142,8 +157,7 @@ class BossStageFirst(Enemy):
                 self.color = self.init_color
 
         threading.Timer(0.5, l).start()
-        for _ in range(2):
-            self.trapManager.advance_create(trap.Laser(screen=self.screen, player=self.player))
+        self.trapManager.advance_create(trap.Laser(screen=self.screen, player=self.player))
 
     def platform_create(self):
         self.create_platform_counter+=1
@@ -152,6 +166,10 @@ class BossStageFirst(Enemy):
             self.create_platform_counter = 0
             self.trapManager.advance_create(trap.Laser(screen=self.screen, player=self.player))
 
+
+
     def __del__(self):
-        for _ in range(5):
+        for _ in range(3):
             self.trapManager.advance_create(trap.Laser(screen=self.screen, player=self.player))
+        for _ in range(10):
+            self.trapManager.advance_create(trap.LockLaser(screen=self.screen, player=self.player))

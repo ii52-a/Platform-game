@@ -3,13 +3,15 @@ import pygame
 import message
 import threading
 
+from Config import Screen
+
 
 class Player:
     INIT_POS = [400, 300]  #初始位置
 
     def __init__(self, platformmanager):
         # 属性
-        self.health = 100  #生命值
+        self.health = 9999  #生命值
         self.pos = self.INIT_POS  #坐标
 
         self.speed = 7  # 初始速度
@@ -30,7 +32,7 @@ class Player:
         self.current_platform = self.platformManager.platforms[0]  # 绑定初始平台
         self.message = message.Message()
 
-        self.status=[0]   #颜色参数
+        self.fcolor=(5,5,5)
 
     def get_rect(self):
         return pygame.Rect(
@@ -50,8 +52,8 @@ class Player:
     """左右限制"""
 
     def left_right_limit(self):
-        if self.pos[0] + self.radius >= 1280:
-            self.pos[0] = 1280 - self.radius
+        if self.pos[0] + self.radius >= Screen.ScreenX:
+            self.pos[0] = Screen.ScreenX - self.radius
         elif self.pos[0] - self.radius <= 0:
             self.pos[0] = 0 + self.radius
 
@@ -120,17 +122,17 @@ class Player:
             self.left_right_limit()
 
     def is_damaging(self, damage, color=(255, 44, 44)):
-        fcolor = self.color
-        if self.status[0] == 0:
-            self.color = color
-            self.status[0]=1
-        self.health -= damage
+        if self.is_gaming:
+            def bc():
+                self.color = self.fcolor
+            if self.color == self.fcolor:
+                self.color = color
+                threading.Timer(0.5,bc).start()
+            self.health -= damage
 
-        def bc():
-            self.color = fcolor
-            self.status[0] = 0
 
-        threading.Timer(0.5, bc).start()
+
+
         # TODO
         pass
 
