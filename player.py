@@ -1,9 +1,10 @@
 import pygame
+from fontTools.merge.util import current_time
 
 import message
 import threading
 
-from Config import Screen
+from Config import Screen, Config
 
 
 class Player:
@@ -11,7 +12,7 @@ class Player:
 
     def __init__(self, platformmanager):
         # 属性
-        self.health = 9999  #生命值
+        self.health = Config.PLAYER_HEALTH  #生命值
         self.pos = self.INIT_POS  #坐标
 
         self.speed = 7  # 初始速度
@@ -31,6 +32,8 @@ class Player:
         self.platformManager = platformmanager
         self.current_platform = self.platformManager.platforms[0]  # 绑定初始平台
         self.message = message.Message()
+
+        self.damage_color=0
 
         self.fcolor=(5,5,5)
 
@@ -66,6 +69,7 @@ class Player:
                 self.leave_platform()
             self.pos[1] =0+self.radius
     def leave_platform(self):
+        self.current_platform.debind_player()
         self.current_platform.if_player = False
         self.current_platform = None
         self.is_grounded = False
@@ -81,6 +85,7 @@ class Player:
                 self.is_grounded = True
                 self.current_platform = platform
                 self.current_platform.if_player = True
+                self.current_platform.bind_player(self)
                 self.current_platform.last_pos = (self.current_platform.rect.x, self.current_platform.rect.y)
         if self.is_grounded:
             pos = self.pos
@@ -123,12 +128,13 @@ class Player:
 
     def is_damaging(self, damage, color=(255, 44, 44)):
         if self.is_gaming:
-            def bc():
-                self.color = self.fcolor
             if self.color == self.fcolor:
                 self.color = color
-                threading.Timer(0.5,bc).start()
+                self.damage_color=pygame.time.get_ticks()
             self.health -= damage
+
+    def init_color(self):
+        self.color = self.fcolor
 
 
 
@@ -142,8 +148,12 @@ class Player:
             self.pos[1] += self.velocity_y
             if self.velocity_y < -self.jump_speedMax:
                 self.velocity_y += self.gravity
+            #衰落死亡
             if self.pos[1] >= 1000:
-                self.health = 0
+                if not Config.PLAYER_NO_DAMP:
+                    self.health = 0
+                else:
+                    self.pos[1] = 200
 
         if self.current_platform:
             self.velocity_y = 0

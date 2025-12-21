@@ -1,9 +1,11 @@
 import random
 
+from Config import Config
+
 
 class Rule:
     score = 0
-    stage = 1
+    stage = Config.START_STAGE
     boss_stage=0
     if_boss=False
 
@@ -26,8 +28,30 @@ class Rule:
             cls.stage = 4
         elif score <= 10000:
             cls.stage = 5
-        elif score <=50000:
+        elif score <=20000:
             cls.stage = 6
+        elif score <= 250000:
+            cls.stage = 7
+        elif score <= 9999999:
+            cls.stage = 8
+
+    def world_get(self):
+        if self.stage == 1:
+            return "白昼",(136, 137, 144)
+        elif self.stage == 2:
+            return "阴影",(176, 179, 200)
+        elif self.stage == 3:
+            return "起源",(59, 59, 59)
+        elif self.stage == 4:
+            return "迷惘",(76, 76, 76)
+        elif self.stage == 5:
+            return "红色黑洞",(255, 29, 29)
+        elif self.stage == 6:
+            return "炼狱",(255, 35, 29)
+        elif self.stage == 7:
+            return "浅蓝",(36, 233, 255)
+        else:
+            return "新世界",(0,0,0)
 
     @classmethod
     def again(cls):
@@ -47,6 +71,8 @@ class Rule:
         hs_color = (136, 136, 136)
         #高级灰
         gjh_color = (105, 105, 105)
+        #冰蓝
+        bl_color = (24, 145, 225)
         if cls.stage == 1 or cls.stage == 3:
             return simple_color
         elif cls.stage == 2:
@@ -57,7 +83,10 @@ class Rule:
             return dy_color if cls.if_boss else simple_color
         elif cls.stage == 6:
             return dy_color
-        return None
+        elif cls.stage == 7:
+            return bl_color
+        else:
+            return simple_color
 
     """平台规则"""
 
@@ -70,8 +99,12 @@ class Rule:
             ot = [20, 40, 20, 20]
         elif cls.stage == 3:
             ot = [25, 40, 20, 15]
+        elif cls.stage == 7:
+            ot= [0,5,5,5,55,30]
         else:
             ot = [30, 35, 15, 20]
+        if len(ot) <len(listt):
+            ot+=[0]*(len(listt)-len(ot))
         return random.choices(population=listt, weights=ot, k=1)[0]()
 
 
@@ -86,11 +119,33 @@ class Rule:
         elif cls.stage == 5 and cls.if_boss:
             return 1
         elif cls.stage <=6:
-            return 3
-        return None
+            return 2
+        elif cls.stage <=7:
+            return 1
+        elif cls.stage <=8:
+            return 8
+        else:
+            return 4
+
+    @classmethod
+    def create_enemy(cls,listt):
+        ot = []
+        if cls.stage <=4:
+            ot = [100]
+        elif cls.stage <=7:
+            ot =[100]
+        else:
+            ot = [100]
+        if len(ot) < len(listt):
+            ot += [0] * (len(listt) - len(ot))
+        return random.choices(population=listt, weights=ot, k=1)[0]
+
 
     @classmethod
     def platform_create_rule(cls,listt):
+        """
+            SpUpPlatform, SpDownPlatform, SpFragilePlatform,SPICEPlatform,SPICEPlatformQ,
+        """
         ot = []
         if cls.stage == 1:
             ot = [30, 35, 35]
@@ -98,8 +153,12 @@ class Rule:
             ot = [20, 60, 20]
         elif cls.stage == 3:
             ot = [25, 50, 25]
+        elif cls.stage ==7:
+            ot = [10, 10, 10, 30, 40]
         else:
             ot = [30, 40, 30]
+        if len(ot) < len(listt):
+            ot+=[0]*(len(listt)-len(ot))
         return random.choices(population=listt, weights=ot, k=1)[0]()
 
     @classmethod
@@ -116,16 +175,23 @@ class Rule:
 
     def trap_create_rule(self,listt):   #Laser, LockLaser, MoveLaser
         ot = []
+        """
+            Laser, LockLaser, MoveLaser,RectXLaser,XLOCKLaser
+        """
         if self.stage == 1 or self.stage == 2:
             ot=[33,33,34,0]
         elif self.stage == 3:
             # ot = [40,20,35,5]
-            ot=[1,1,1,97]
+            ot=[1,4,5,90]
         elif self.stage == 4:
             # ot = [35,25,30,10]
-            ot=[1,1,1,97]
-        elif self.stage == 5:
-            ot = [30,25,30,15]
+            ot=[10,5,5,50,30]
+        elif self.stage == 5 or self.stage == 6:
+            ot = [20,20,30,25,5]
+        elif self.stage == 7:
+            ot = [20,20,10,20,30]
         else:
-            ot = [25,30,20,25]
+            ot = [20,20,20,20,20]
+        if len(ot) < len(listt):
+            ot+=[0]*(len(listt)-len(ot))
         return random.choices(population=listt, weights=ot, k=1)[0]

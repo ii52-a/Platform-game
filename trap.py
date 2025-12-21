@@ -93,12 +93,14 @@ class TarpManager:
     def draw(self, screen):
         for platform in self.tarps:
             platform.draw(screen)
+            if len(self.tarps)>=2:
+                platform.if_advance_time=False
         for ad in self.advance_tarps:
             ad.advance_draw()
 
     def advance_create(self,ad=None):
         ad = self.rule.trap_create_rule([
-            Laser, LockLaser, MoveLaser,RectXLaser
+            Laser, LockLaser, MoveLaser,RectXLaser,XLOCKLaser
         ])(self.player, self.screen) if ad is None else ad
         if ad:
             ad.advance_draw()
@@ -114,15 +116,17 @@ class TarpManager:
 
 
 class Laser(Trap):
-    def __init__(self, player, screen, x=None, y=0, width=20, height=Screen.ScreenY, damage=10, color=(128, 128, 128)):
+    def __init__(self, player, screen, x=None, y=0, width=20, height=Screen.ScreenY, damage=10, color=(128, 128, 128),if_advance_time=True):
         self.color = (214, 212, 71)
         super().__init__(player=player, color=self.color, screen=screen, width=width, height=height, damage=damage)
-        self.life_cycle = 70 + 5 * self.rule.stage
+        self.life_cycle = 60 + 2 * self.rule.stage
+        self.if_advance_time=if_advance_time
 
     def advance_draw(self):
-        self.message.font_draw('', f"{self.advance_Timer:.1f}", screen=self.screen, x=self.rect.x + self.rect.width,
-                               y=10,
-                               color=(210, 208, 120))
+        if self.if_advance_time:
+            self.message.font_draw('', f"{self.advance_Timer:.1f}", screen=self.screen, x=self.rect.x + self.rect.width,
+                                   y=10,
+                                   color=(210, 208, 120))
         pygame.draw.rect(self.screen, (255, 25, 25), (self.rect.x + self.rect.width / 2, 0, 2, self.screen_pos_height))
 
     def update(self):
@@ -134,9 +138,10 @@ class Laser(Trap):
             self.is_active = False
 
     def draw(self, screen):
-        self.message.font_draw('', f"{self.life_cycle - self.life_time:.1f}", screen=self.screen,
-                               x=self.rect.x + self.rect.width + 5, y=10,
-                               color=(41, 230, 255))
+        if self.if_advance_time:
+            self.message.font_draw('', f"{self.life_cycle - self.life_time:.1f}", screen=self.screen,
+                                   x=self.rect.x + self.rect.width + 5, y=10,
+                                   color=(41, 230, 255))
 
         super().draw(screen)
 
@@ -147,7 +152,7 @@ class Laser(Trap):
 
 
 class MoveLaser(Laser):
-    def __init__(self, player, screen, speed_x=None):
+    def __init__(self, player, screen, speed_x=None,if_advance_time=True):
         super().__init__(player, screen)
         self.speed_x = random.randint(-1 * self.rule.stage, 1 * self.rule.stage) if speed_x is None else speed_x
 
@@ -161,15 +166,16 @@ class MoveLaser(Laser):
 
     def advance_draw(self):
         LorR = "Left" if self.speed_x < 0 else "Right"
-        self.message.font_draw('', LorR, screen=self.screen,
-                               x=self.rect.x - 35, y=10,
-                               color=(160, 59, 163))
+        if self.if_advance_time:
+            self.message.font_draw('', LorR, screen=self.screen,
+                                   x=self.rect.x - 35, y=10,
+                                   color=(160, 59, 163))
         super().advance_draw()
 
 
 class LockLaser(Laser):
-    def __init__(self, player, screen):
-        super().__init__(player, screen)
+    def __init__(self, player, screen,if_advance_time=True):
+        super().__init__(player, screen,if_advance_time=if_advance_time)
         self.rect.x = max(min(random.randint(player.pos[0] - 250, player.pos[0] + 250),self.screen_pos_width-50),50)
         self.advance_speed_x = 0.8 + self.rule.stage * 0.3
         self.speed_x = 0
@@ -186,8 +192,9 @@ class LockLaser(Laser):
 
 
 class RectXLaser(Trap):
-    def __init__(self, player, screen):
+    def __init__(self, player, screen,if_advance_time=True):
 
+        self.if_advance_time =if_advance_time
         y = random.randint(20, self.screen_pos_height - 20)
 
         super().__init__(
@@ -208,11 +215,12 @@ class RectXLaser(Trap):
 
     def advance_draw(self):
         self.rect.move_ip(0,1)
-        self.message.font_draw('', f"{self.advance_Timer:.1f}",
-                               screen=self.screen,
-                               x=self.screen_pos_width - 20,
-                               y=self.rect.y + 20,
-                               color=(210, 208, 120))
+        if self.if_advance_time:
+            self.message.font_draw('', f"{self.advance_Timer:.1f}",
+                                   screen=self.screen,
+                                   x=self.screen_pos_width - 20,
+                                   y=self.rect.y + 20,
+                                   color=(210, 208, 120))
 
         # 绘制水平预警线
         pygame.draw.line(self.screen, (255, 25, 25),
@@ -244,3 +252,22 @@ class RectXLaser(Trap):
         if self.damage_time >= self.damage_cycle:
             self.player.is_damaging(self.damage)
             self.damage_time = 0
+
+
+class XLOCKLaser(RectXLaser):
+    def __init__(self, player, screen,if_advance_time=True):
+        super().__init__(player, screen,if_advance_time=if_advance_time)
+        self.rect.y = max(min(random.randint(int(player.pos[1]) - 100, int(player.pos[1]) + 100),self.screen_pos_height-30),30)
+        self.advance_speed_y = 0.8 + self.rule.stage * 0.1
+        self.speed_y = 0
+        self.life_cycle = 20 + 4 * self.rule.stage
+        self.advance_Timer = 175
+        self.damage = 10
+        self.life_cycle = 40
+
+    def advance_draw(self):
+        if self.player.pos[1] > self.rect.y:
+            self.rect.move_ip(0,min(self.advance_speed_y, 2))
+        elif self.player.pos[1] < self.rect.y:
+            self.rect.move_ip(0,max(-self.advance_speed_y, -3))
+        super().advance_draw()

@@ -1,8 +1,9 @@
 import rules
+from Config import Config
 
 
 class Event:
-    score = 0
+    score = Config.INIT_SCORE
 
     def __init__(self, screen, player):
         self.rule = rules.Rule()
@@ -16,7 +17,7 @@ class Event:
         self.score_time_get += 1
         if self.score_time_get > self.score_time:
             self.score_time_get = 0
-            self.score += score_get * self.rule.stage + 150
+            self.score += score_get * self.rule.stage +Config.EXTRA_SCORE
             self.rule.stage_change(self.score)
 
     def game_over(self, health):

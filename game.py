@@ -1,13 +1,14 @@
 import pygame
 
-import enemy
+
+from Manager import *
 import trap
-from Config import Screen
+from Config import Screen, Version
+from PlatForm import PlatformFirst
 from player import Player
-from platform import PlatformsManager, PlatformFirst
 from Event import Event
 from message import Message
-from trap import TarpManager,MoveLaser
+from trap import TarpManager
 import rules
 
 
@@ -63,7 +64,7 @@ class Game:
         self.player.is_gaming = False
         self.player.velocity_y = 0
         self.trapManager = TarpManager(player=self.player, screen=self.screen)
-        self.enemyManager = enemy.EnemyManager(self.player, self.screen, self.trapManager, self.platformsManager)
+        self.enemyManager = EnemyManager(self.player, self.screen, self.trapManager, self.platformsManager)
         self.event = Event(self.trapManager, self.screen)
 
 
@@ -116,6 +117,11 @@ class Game:
                 for _ in range(5):
                     self.trapManager.advance_create(trap.Laser(self.player, self.screen))
 
+        #玩家变化
+        ck=pygame.time.get_ticks()
+        if ck-self.player.damage_color >500:
+            self.player.init_color()
+
     def render(self):
         # 绘制背景
         self.screen.fill(self.bg_color)
@@ -138,15 +144,18 @@ class Game:
     def render_debug_info(self):
         # 玩家信息
         vel_text_platform_count = len(self.platformsManager.platforms)
-        vel_text_health = f"a2.7"
+        vel_text_health = f"{Version.VERSION_STR}"
         vel_text_score = f" {self.event.score:.1f}"
         vel_text_stage = f"{self.rule.stage}"
         vel_text_history = f"{self.history_max}"
-        self.message.font_draw('version:', vel_text_health, self.screen, 10, 10)
+        vel_text_world=f"{self.rule.world_get()[0]}"
+        vel_text_world_color=self.rule.world_get()[1]
+        self.message.font_draw('version.txt:', vel_text_health, self.screen, 10, 10)
         self.message.font_draw("history:",vel_text_history,self.screen,10,40)
         self.message.font_draw('platform_count:', vel_text_platform_count, self.screen, 10, 70)
-        self.message.font_draw('score:', vel_text_score, self.screen, 10, 100)
-        self.message.font_draw('stage:', vel_text_stage, self.screen, 10, 130)
+        self.message.font_draw('world:',vel_text_world,self.screen,10,100,color=vel_text_world_color)
+        self.message.font_draw('score:', vel_text_score, self.screen, 10, 130)
+        self.message.font_draw('stage:', vel_text_stage, self.screen, 10, 160)
 
     def run(self):
         while self.running:

@@ -1,0 +1,26 @@
+import pygame
+
+
+class IceDeath:
+    def __init__(self, x, y,color=(32, 32, 238)):
+        self.x = x
+        self.y = y
+        # 冰特效建议使用亮蓝色
+        self.color = color
+        self.radius = 5
+        self.max_radius = 90  # 扩散多大
+        self.speed = 3  # 扩散多快
+        self.thickness = 6  # 初始线条粗细
+        self.is_alive = True
+
+    def update(self):
+        self.radius += self.speed
+        # 线条随半径增大而变细
+        self.thickness = max(1, 6 - int((self.radius / self.max_radius) * 6))
+
+        if self.radius >= self.max_radius:
+            self.is_alive = False
+
+    def draw(self, screen):
+        if self.is_alive:
+            pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius, self.thickness)
