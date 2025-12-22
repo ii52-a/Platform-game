@@ -1,7 +1,7 @@
 """右移易碎平台"""
 import random
 
-from Config import Screen
+from loop.Config import Screen
 from PlatForm import SpFragilePlatform
 
 

@@ -1,7 +1,7 @@
 """定速块"""
 import random
 
-import rules
+from loop import rules
 from PlatForm.platform import Platform
 
 

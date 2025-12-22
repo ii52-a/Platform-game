@@ -2,15 +2,21 @@ import threading
 
 import pygame
 
-import rules
-import trap
-from Config import Config
+from loop import rules
+from EffectGlobal import Global
+from Effects import BossDeathEffect
+from Trap import *
+from loop.Config import Config
 from Enemy import Enemy
 
 
-class BossStageFirst(Enemy):
-    def __init__(self, screen, player, traps, platform):
-        super().__init__(screen=screen, player=player, traps=traps, platform=platform)
+class BlackHole(Enemy):
+    """
+    第一boss-黑洞
+        使用光环扩散，触碰到玩家将发射激光，伤害2
+    """
+    def __init__(self, screen, player, traps, platform,enemy):
+        super().__init__(screen=screen, player=player, traps=traps, platform=platform,enemy=enemy)
         self.health = Config.FIRST_BOSS_HEALTH
         self.radius = 50
         self.rect.x = 640
@@ -32,6 +38,7 @@ class BossStageFirst(Enemy):
             self.call_laser()
             self.damage_counter = 0
         if self.health <= 0:
+            self.effect=BossDeathEffect(self.rect.centerx, self.rect.centery)
             self.is_alive = False
             rules.Rule.if_boss = False
         self.platform_create()
@@ -42,7 +49,8 @@ class BossStageFirst(Enemy):
         self.tx_radius += 6
 
         if a.colliderect(self.player.get_rect()):
-            self.trapManager.advance_create(trap.LockLaser(screen=self.screen, player=self.player,if_advance_time=False))
+            self.trapManager.advance_create(
+                LockLaser(screen=self.screen, player=self.player,damage=2, if_advance_time=False))
         if self.tx_radius >= 220+(250-self.health):
             self.if_tx = False
             self.tx_radius = self.radius
@@ -59,6 +67,7 @@ class BossStageFirst(Enemy):
         radius_c = self.radius
         self.radius = 60
         self.if_tx = True
+        Global.shark_time=6
 
         def l():
             self.radius = radius_c
@@ -67,19 +76,21 @@ class BossStageFirst(Enemy):
                 self.color = self.init_color
 
         threading.Timer(0.5, l).start()
-        self.trapManager.advance_create(trap.Laser(screen=self.screen, player=self.player))
+        self.trapManager.advance_create(Laser(screen=self.screen, player=self.player))
 
     def platform_create(self):
         self.create_platform_counter+=1
         if self.create_platform_counter > self.create_platform_cycle:
             self.platform.boss_exPlatform()
             self.create_platform_counter = 0
-            self.trapManager.advance_create(trap.Laser(screen=self.screen, player=self.player))
+            self.trapManager.advance_create(Laser(screen=self.screen, player=self.player))
 
 
 
     def __del__(self):
+
         for _ in range(3):
-            self.trapManager.advance_create(trap.Laser(screen=self.screen, player=self.player,if_advance_time=False))
+            self.trapManager.advance_create(Laser(screen=self.screen, player=self.player, if_advance_time=False))
         for _ in range(10):
-            self.trapManager.advance_create(trap.LockLaser(screen=self.screen, player=self.player,if_advance_time=False))
+            self.trapManager.advance_create(
+                LockLaser(screen=self.screen, player=self.player, if_advance_time=False))

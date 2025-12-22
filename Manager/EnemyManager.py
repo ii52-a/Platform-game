@@ -1,5 +1,6 @@
-import rules
+from loop import rules
 from Enemy import *
+
 
 
 class EnemyManager:
@@ -11,27 +12,31 @@ class EnemyManager:
         self.screen = screen
         self.enemy_counter = 0
         self.rules = rules.Rule()
-        self.FirstBoss = True
+        self.Boss = [True,True]
         self.trapManager = traps
         self.platform = platform
 
-    def update(self, time=500):
-        if time != -1:
-            self.enemy_counter += 1
-            if self.enemy_counter >= time:
-                self.enemies.append((rules.Rule.create_enemy(
-                    [IceEnemy]
-                ))(self.screen,self.player,self.trapManager,self.platform))
-                self.enemy_counter =0
-        if self.rules.get_stage() == 5 and self.FirstBoss:
+    def update(self):
+        self.enemy_counter += 1
+        if self.enemy_counter >= self.rules.create_enemy_time() and len(self.enemies)<=5:
+            self.enemies.append((rules.Rule.create_enemy(
+                [TreatEnemy,BlackEnemy,IceEnemy]
+            ))(self.screen,self.player,self.trapManager,self.platform,self))
+            self.enemy_counter =0
+        print(self.rules.get_stage(), self.Boss)
+        if self.rules.get_stage() == 5 and self.Boss[0]:
             self.rules.boss_stage = 1
-            self.FirstBoss = False
-            self.create_enemy(BossStageFirst(self.screen, self.player, self.trapManager, self.platform))
+            self.Boss[0] = False
+            self.create_enemy(BlackHole(self.screen, self.player, self.trapManager, self.platform,self))
 
+        elif self.rules.get_stage() == 8 and self.Boss[1]:
             rules.Rule.if_boss = True
+            self.Boss[1] = False
+            self.create_enemy(IceBlue(self.screen, self.player, self.trapManager, self.platform,self))
         for p in self.enemies[:]:
             if not p.is_alive:
-                self.effects.append(p.effect)
+                if p.effect:
+                    self.effects.append(p.effect)
                 self.enemies.remove(p)
                 del p
             else:

@@ -1,6 +1,6 @@
 import random
 
-import rules
+from loop import rules
 from PlatForm import *
 
 class PlatformsManager:
@@ -47,7 +47,7 @@ class PlatformsManager:
 
     def boss_exPlatform(self):
                 self.platforms.append(self.rules.platform_boss_rule([
-                    SIPrightMovePlatform,SPrightFrpPlatform
+                    SIPrightMovePlatform,SPrightFrpPlatform,SPICEPlatform,SPICEPlatformQ,
                 ]))
 
     def draw_all_platforms(self, screen):
@@ -58,6 +58,6 @@ class PlatformsManager:
 
     def check_collision(self, player_rect):
         for platform in self.platforms:
-            if platform.check_collision(player_rect):
+            if platform.check_collision((player_rect[0], player_rect[1]+player_rect[3],player_rect[2]-10,5)):
                 return platform
         return None

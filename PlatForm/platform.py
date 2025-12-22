@@ -2,9 +2,8 @@ import random
 
 import pygame
 
-import message
-import rules
-from Config import Screen
+from loop import rules, message
+from loop.Config import Screen
 
 rule = rules.Rule()
 

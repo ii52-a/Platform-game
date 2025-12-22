@@ -1,22 +1,25 @@
+import random
+
 import pygame
 
-
+from EffectGlobal import Global
 from Manager import *
-import trap
-from Config import Screen, Version
+
+from loop.Config import Screen, Version
 from PlatForm import PlatformFirst
 from player import Player
-from Event import Event
+from loop.Event import Event
 from message import Message
-from trap import TarpManager
 import rules
-
+from Trap import *
 
 class Game:
     PLATFORM_TIME = 100
 
     def __init__(self):
         # 初始化pygame
+        pygame.init()
+        pygame.display.set_caption("Game")
         self.event = None
         self.enemyManager = None
         self.trapManager = None
@@ -28,12 +31,16 @@ class Game:
         self.now_stage = None
         self.dt = None
         self.running = None
-        pygame.init()
-        self.screen = pygame.display.set_mode((Screen.ScreenX, Screen.ScreenY), vsync=True)
-        pygame.display.set_caption("Game")
+        #屏幕
+        self._display = pygame.display.set_mode((Screen.ScreenX, Screen.ScreenY), vsync=True)
+        #时刻钟
         self.clock = pygame.time.Clock()
-        self.if_reset=False
+        #历史
         self.history_max=0
+        #屏幕位移 / 震屏打击
+        self.game_canvas = pygame.Surface((Screen.ScreenX, Screen.ScreenY))
+        self.screen=self.game_canvas
+        self.shake_amount=0
 
         # 初始化游戏状态
         self.reset_game()
@@ -89,8 +96,6 @@ class Game:
     def update(self):
         """更新阶段变化"""
 
-            # self.event.create_boss()
-            # print(self.now_stage)
 
         """玩家效果"""
         # 更新玩家物理状态
@@ -115,28 +120,41 @@ class Game:
             self.now_stage = self.rule.stage
             if self.now_stage == 4:
                 for _ in range(5):
-                    self.trapManager.advance_create(trap.Laser(self.player, self.screen))
+                    self.trapManager.advance_create(Laser(self.player, self.screen))
 
         #玩家变化
         ck=pygame.time.get_ticks()
         if ck-self.player.damage_color >500:
             self.player.init_color()
 
+        #屏幕打击感
+        if Global.shark_time>self.shake_amount:
+            self.shake_amount=Global.shark_time
+            Global.shark_time = 0
+        if self.shake_amount > 0:
+            self.shake_amount -= 1  # 每帧减少强度
+            if self.shake_amount < 0:
+                self.shake_amount = 0
+
     def render(self):
         # 绘制背景
-        self.screen.fill(self.bg_color)
+        self.game_canvas.fill(self.bg_color)
 
-        # 玩家
-        self.player.draw(self.screen)
-        # 平台
-        self.platformsManager.draw_all_platforms(self.screen)
+        self.player.draw(self.game_canvas)  # 注意：传的是 game_canvas
+        self.platformsManager.draw_all_platforms(self.game_canvas)
+        self.trapManager.draw(self.game_canvas)
+        self.enemyManager.draw()
         self.bg_color = self.rule.bg_color_get()
-        #陷阱
-        self.trapManager.draw(self.screen)
+        #震动参数
+        offset_x = 0
+        offset_y = 0
+        if self.shake_amount > 0:
+            offset_x = random.randint(-int(self.shake_amount), int(self.shake_amount))
+            offset_y = random.randint(-int(self.shake_amount), int(self.shake_amount))
+        self._display.fill((0, 0, 0))  # 底色涂黑，防止震动露白边
+        self._display.blit(self.game_canvas, (offset_x, offset_y))
         # 显示信息
         self.render_debug_info()
-
-        self.enemyManager.draw()
 
         # 更新显示
         pygame.display.flip()
@@ -150,12 +168,12 @@ class Game:
         vel_text_history = f"{self.history_max}"
         vel_text_world=f"{self.rule.world_get()[0]}"
         vel_text_world_color=self.rule.world_get()[1]
-        self.message.font_draw('version.txt:', vel_text_health, self.screen, 10, 10)
-        self.message.font_draw("history:",vel_text_history,self.screen,10,40)
-        self.message.font_draw('platform_count:', vel_text_platform_count, self.screen, 10, 70)
-        self.message.font_draw('world:',vel_text_world,self.screen,10,100,color=vel_text_world_color)
-        self.message.font_draw('score:', vel_text_score, self.screen, 10, 130)
-        self.message.font_draw('stage:', vel_text_stage, self.screen, 10, 160)
+        self.message.font_draw('version:', vel_text_health, self._display, 10, 10)
+        self.message.font_draw("history:",vel_text_history,self._display,10,40)
+        self.message.font_draw('platform_count:', vel_text_platform_count, self._display, 10, 70)
+        self.message.font_draw('world:',vel_text_world,self._display,10,100,color=vel_text_world_color)
+        self.message.font_draw('score:', vel_text_score, self._display, 10, 130)
+        self.message.font_draw('stage:', vel_text_stage, self._display, 10, 160)
 
     def run(self):
         while self.running:

@@ -8,7 +8,7 @@ class SPICEPlatform(SpFragilePlatform):
         self.color = (19, 24, 176)
         self.destroy_time = 100
         self.if_player_quik=False
-        self.quik=15
+        self.quik=12
 
     def update(self):
         super().update()

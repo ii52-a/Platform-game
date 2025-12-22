@@ -1,15 +1,14 @@
 import rules
-from Config import Config
+from loop.Config import Config
 
 
 class Event:
     score = Config.INIT_SCORE
 
     def __init__(self, screen, player):
-        self.rule = rules.Rule()
         self.time = 0
         self.score_time_get = 0
-        self.score_time = 80 - self.rule.stage * 5
+        self.score_time = 80 - rules.Rule.stage * 5
         self.screen = screen
         self.player = player
 
@@ -17,8 +16,8 @@ class Event:
         self.score_time_get += 1
         if self.score_time_get > self.score_time:
             self.score_time_get = 0
-            self.score += score_get * self.rule.stage +Config.EXTRA_SCORE
-            self.rule.stage_change(self.score)
+            self.score += score_get * rules.Rule.stage +Config.EXTRA_SCORE
+            rules.Rule.stage_change(self.score)
 
     def game_over(self, health):
         if health <= 0:

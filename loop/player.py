@@ -1,10 +1,8 @@
 import pygame
-from fontTools.merge.util import current_time
 
 import message
-import threading
 
-from Config import Screen, Config
+from loop.Config import Screen, Config
 
 
 class Player:
@@ -81,7 +79,7 @@ class Player:
             self.leave_platform()
         if self.current_platform is None:
             platform = self.platformManager.check_collision(self.get_rect())
-            if platform:
+            if platform and self.velocity_y >0:
                 self.is_grounded = True
                 self.current_platform = platform
                 self.current_platform.if_player = True

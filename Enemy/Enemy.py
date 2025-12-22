@@ -1,15 +1,12 @@
 import random
-import threading
 
 import pygame
-import message
-import trap
-import rules
-from Config import Screen, Config
+from loop import message
+from loop.Config import Screen
 
 
 class Enemy:
-    def __init__(self, screen, player, traps, platform, x=None, y=None, width=50, height=50, radius=None,
+    def __init__(self, screen, player, traps, platform,enemy, x=None, y=None, width=50, height=50, radius=None,
                  color=(0, 0, 0)):
         x = random.randint(0, Screen.ScreenX - 1) if x is None else x
         y = random.randint(0, 720 - 1) if y is None else y
@@ -33,6 +30,8 @@ class Enemy:
         self.damage_counter = 0
         self.trapManager = traps
         self.platform = platform
+        self.enemyManager=enemy
+        self.effect=None
 
 
 
@@ -55,10 +54,20 @@ class Enemy:
         pass
 
 
+    #属性定义修饰
+    @property
+    def context(self):
+        return {
+            "screen": self.screen,
+            "player": self.player,
+            "traps": self.trapManager,
+            "platform": self.platform,
+            "enemy": self.enemyManager
+        }
 
-
-
-
-
-
-
+    def create_new_enemy(self,new_enemy,**kwargs):
+        params=self.context.copy()    #获取基本相同属性
+        params.update(kwargs)     #合并额外属性
+        new_obj=new_enemy(**params)   #直接传递
+        self.enemyManager.enemies.append(new_obj)   #添加
+        return new_obj   #返回

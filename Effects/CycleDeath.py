@@ -1,16 +1,24 @@
 import pygame
 
 
-class IceDeath:
-    def __init__(self, x, y,color=(32, 32, 238)):
+
+
+
+class CycleDeath:
+    """
+    圆波扩散
+    """
+    def __init__(self, x, y,
+                 color=(32, 32, 238),max_radius=90,speed=3,thickness=6
+                 ):
         self.x = x
         self.y = y
         # 冰特效建议使用亮蓝色
         self.color = color
         self.radius = 5
-        self.max_radius = 90  # 扩散多大
-        self.speed = 3  # 扩散多快
-        self.thickness = 6  # 初始线条粗细
+        self.max_radius = max_radius  # 扩散多大
+        self.speed = speed  # 扩散多快
+        self.thickness = thickness  # 初始线条粗细
         self.is_alive = True
 
     def update(self):

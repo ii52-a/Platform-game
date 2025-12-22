@@ -1,7 +1,7 @@
 """简单平台"""
 import random
 
-from Config import Screen
+from loop.Config import Screen
 from PlatForm.platform import Platform
 
 
