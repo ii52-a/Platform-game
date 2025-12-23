@@ -7,17 +7,20 @@ class Version:
     VERSION_STR="a4.3"
 
 class Config:
+    #test 自移动平台,生成一个随玩家移动的平台代替初始平台
+    #标准 False
+    TEST_PLATFORM=True
+
     #免疫掉落死亡
     #标准 False
     PLAYER_NO_DAMP=True
-
 
     #表演模式:trap生成数量增加
     #标准 0 增加将极大提升难度
     TRAP_ADD=0
     #初始分数  决定阶段
     #标准 0
-    INIT_SCORE=22000
+    INIT_SCORE=5000
 
 
     #玩家生命值

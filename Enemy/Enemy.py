@@ -1,3 +1,4 @@
+import math
 import random
 
 import pygame
@@ -41,10 +42,17 @@ class Enemy:
     def update(self):
         pass
 
-    def draw(self):
+    def draw(self,if_hp=True,name=None):
         w = self.radius if self.radius is not None else self.rect.width
-
-        self.message.font_draw("HP", f"{self.health:.1f}", self.screen, self.rect.x + w, self.rect.y + 5, self.color)
+        if if_hp:
+            self.message.font_draw("HP", f"{self.health:.1f}", self.screen, self.rect.x + w, self.rect.y + 5, self.color)
+        if name:
+            if if_hp:
+                self.message.font_draw(f"{name}","", self.screen, self.rect.x + w, self.rect.y -10,
+                                       self.color)
+            else:
+                self.message.font_draw(f"{name}", "", self.screen, self.rect.x + w, self.rect.y,
+                                       self.color)
         if self.radius is not None:
             pygame.draw.circle(self.screen, self.color, (self.rect.x, self.rect.y), radius=self.radius)
         else:
@@ -71,3 +79,21 @@ class Enemy:
         new_obj=new_enemy(**params)   #直接传递
         self.enemyManager.enemies.append(new_obj)   #添加
         return new_obj
+
+    @staticmethod
+    def check_circle_collision(pos1, radius1, pos2, radius2):
+        """
+        pos1: 第一个圆的中心点 (x, y)
+        radius1: 第一个圆的半径
+        pos2: 第二个圆的中心点 (x, y)
+        radius2: 第二个圆的半径
+        """
+        # 计算两个圆心的横纵距离差
+        dx = pos1[0] - pos2[0]
+        dy = pos1[1] - pos2[1]
+        # 勾股定理计算圆心距
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        # 如果圆心距小于两个半径之和，则碰撞
+        return distance <= (radius1 + radius2)
+
+

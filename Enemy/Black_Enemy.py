@@ -37,6 +37,6 @@ class BlackEnemy(Enemy):
         self.apply_damage()
 
     def apply_damage(self):
-        if self.rect.colliderect(self.player.get_rect()):
+        if self.check_circle_collision((self.rect.x,self.rect.y),self.radius,self.player.pos,self.player.radius):
             self.health = 0
             Global.shark_time=10

@@ -34,7 +34,7 @@ class EnemyManager:
         for p in self.enemies[:]:
             if p.effect:
                 self.effects.extend(p.effect)
-                p.effect = None
+                p.effect = []
             if not p.is_alive:
                 self.enemies.remove(p)
                 del p

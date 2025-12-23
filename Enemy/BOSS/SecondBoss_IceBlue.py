@@ -18,6 +18,8 @@ class IceBlue(Enemy):
         self.rect.x = 640
         self.rect.y = 120
 
+
+
         #技能
         self.damage_counter = 120
         self.damage_time =Config.SECONDE_BOSS_INTERNAL
@@ -46,6 +48,8 @@ class IceBlue(Enemy):
         #碰撞冷却
         self.damage_player_counter=0
 
+        self.lock={}
+
 
 
 
@@ -58,7 +62,7 @@ class IceBlue(Enemy):
             # 第一阶段
             if self.health >= self.fhealth*3//4:
                 k_num=(self.fhealth-self.health) //10
-                if len(self.platform.platforms)<=4:
+                for _ in range(2):
                     self.enemyManager.enemies.append(self.create_new_enemy(IceEnemy))
                 for i in range(k_num):
                     #深蓝打击
@@ -70,9 +74,9 @@ class IceBlue(Enemy):
                     self.trapt.append(new_trap)
             #切换 过渡技能
             if self.health <= self.fhealth*3//4 and self.first_once:
-                self.dx=40
-                self.dy=40
-                for _ in range(5):
+                self.dx=10
+                self.dy=10
+                for _ in range(3):
                     self.enemyManager.enemies.append(self.create_new_enemy(IceEnemy))
                 #加快施法
                 self.damage_counter -=40
@@ -82,10 +86,11 @@ class IceBlue(Enemy):
             #第二阶段
             elif self.health >= self.fhealth//2:
                 self.health-=5
-                self.enemyManager.enemies.append(self.create_new_enemy(IceEnemy))
-                dextra=(self.fhealth-self.health)//4
-                self.dx =random.randint(-14-dextra,14+dextra)
-                self.dy = random.randint(-8-dextra,8+dextra)
+                for _ in range(2):
+                    self.enemyManager.enemies.append(self.create_new_enemy(IceEnemy))
+                dextra=(self.fhealth-self.health)//5
+                self.dx =random.randint(-12-dextra,12+dextra)
+                self.dy = random.randint(-6-dextra,6+dextra)
                 for _ in range(7):
                     self.trapt.append({
                         "pos": (random.randint(50, Screen.ScreenX - 50), random.randint(50, Screen.ScreenY - 50)),
@@ -93,9 +98,9 @@ class IceBlue(Enemy):
                             "color": (4, 148, 131)
                     })
             else:
-                dextra=(self.fhealth-self.health)//6
-                self.dx =random.randint(-16-dextra,16+dextra)
-                self.dy = random.randint(-8-dextra,8+dextra)
+                dextra=(self.fhealth-self.health)//10
+                self.dx =random.randint(-12-dextra,12+dextra)
+                self.dy = random.randint(-6-dextra,6+dextra)
                 for _ in range(8):
                     self.trapt.append({
                         "pos": (random.randint(50, Screen.ScreenX - 50), random.randint(50, Screen.ScreenY - 50)),
@@ -110,19 +115,19 @@ class IceBlue(Enemy):
             self.dy *=0.98
         if self.rect.x-self.radius <=0:
             self.rect.x =self.radius
-            self.dx *=-1.2
+            self.dx *=-1.02
             self.health -=self.cz_self_damage
         if self.rect.x+self.radius >= Screen.ScreenX:
             self.rect.x = Screen.ScreenX-self.radius
-            self.dx *=-1.2
+            self.dx *=-1.02
             self.health -=self.cz_self_damage
         if self.rect.y+self.radius >= Screen.ScreenY:
             self.rect.y = Screen.ScreenY-self.radius
-            self.dy *=-1.2
+            self.dy *=-1.02
             self.health -= self.cz_self_damage
         if self.rect.y-self.radius <= 0:
             self.rect.y = self.radius
-            self.dy *=-1.2
+            self.dy *=-1.02
             self.health -= self.cz_self_damage
         if self.health <= 0:
             self.is_alive = False
@@ -132,13 +137,19 @@ class IceBlue(Enemy):
             self.player.is_damaging(self.pz_damage)
             self.damage_player_counter=now
             #深蓝折跃
-            self.rect.x=random.randint(50, Screen.ScreenX - 50)
-            self.rect.y=random.randint(50, Screen.ScreenY - 50)
-        num= Global.read_ice_death()
+            self.rect.x +=random.randint(-50, 50)
+            self.rect.y +=random.randint(-50,  50)
+            self.dx +=12
+            self.dy +=12
+
+        for i in list(self.lock.keys()):
+            if i not in self.enemyManager.enemies:
+                self.lock.pop(i)
         self.platform_create()
 
     def draw(self):
         if self.trapt:
+            #深蓝打击
             for i in self.trapt[:]:
                 i["radius"] *=1.02
                 u=pygame.draw.circle(self.screen,i["color"],i["pos"],i["radius"],4)
@@ -146,22 +157,34 @@ class IceBlue(Enemy):
                     self.player.is_damaging(damage=5)
                     self.trapt.remove(i)
                     continue
-                if i["radius"] >= 50:
+                if i["radius"] >= 75:
                     self.trapt.remove(i)
                     Global.shark_time=6
 
         w = self.radius if self.radius is not None else self.rect.width
-        self.message.font_draw("冰蓝", "", self.screen, self.rect.x + w, self.rect.y -5, self.color)
+        self.message.font_draw("冰蓝", "", self.screen, self.rect.x + w, self.rect.y -10, self.color)
         self.message.font_draw("HP", f"{self.health:.1f}", self.screen, self.rect.x + w, self.rect.y + 5, self.color)
-        extra=(self.damage_time-self.damage_counter) /2
+        extra=(self.damage_time-self.damage_counter) // 1.2
         if self.radius is not None:
             pygame.draw.circle(self.screen, self.color, (self.rect.x, self.rect.y), radius=self.radius)
 
         b=pygame.draw.circle(self.screen, self.color, (self.rect.x, self.rect.y),self.radius+extra,5)
-        if b.colliderect(self.player.get_rect()):
-            Global.shark_time=8
-            self.damage_counter+=30
-            self.health +=1
+        #圆环内boss技能: 吸收 冰寒强化自身
+        for i in self.enemyManager.enemies:
+            if self.circle_collision(b,i.rect) and isinstance(i,IceEnemy):
+                if i not in self.lock.keys():
+                    self.lock.setdefault(i,0)
+                elif self.lock[i]>=200:
+                    i.is_alive=False
+                    self.health +=2
+                    self.damage_counter+=240
+                else:
+                    self.lock[i]+=1
+                    pygame.draw.line(self.screen, i.color, (self.rect.centerx, self.rect.centery),
+                                     (i.rect.x, i.rect.y))
+
+
+
 
     def platform_create(self):
         self.create_platform_counter+=1

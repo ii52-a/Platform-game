@@ -25,11 +25,12 @@ class IceEnemy(Enemy):
         self.damage_time=200
         self.once_locked=True
         self.effect=[]
+        self.name='冰寒'
 
-    def draw(self):
+    def draw(self,if_hp=False,name=None):
         if self.locked_platform:
             pygame.draw.line(self.screen,(23, 178, 255),start_pos=(self.rect.x,self.rect.y), end_pos=(self.locked_platform.rect.centerx,self.locked_platform.rect.centery))
-        super().draw()
+        super().draw(if_hp=if_hp,name=self.name)
 
 
 

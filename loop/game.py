@@ -5,8 +5,8 @@ import pygame
 from EffectGlobal import Global
 from Manager import *
 
-from loop.Config import Screen, Version
-from PlatForm import PlatformFirst
+from loop.Config import Screen, Version, Config
+from PlatForm import PlatformFirst, PlatformControl
 from player import Player
 from loop.Event import Event
 from message import Message
@@ -55,22 +55,31 @@ class Game:
         self.rule.again()
         self.bg_color = self.rule.bg_color_get()
 
+
         # 重新创建所有游戏对象
         self.platformsManager = PlatformsManager()
-        self.message = Message()
-
-        # 初始平台
-        self.platformsManager.platforms.append(PlatformFirst(Player.INIT_POS))
         self.platformsManager.spawn_create_platform()
         self.player = Player(self.platformsManager)
-        
+
         self.player.pos = [Player.INIT_POS[0], Player.INIT_POS[1]]
 
         self.player.is_gaming = False
         self.player.velocity_y = 0
+        self.message = Message()
+
+        # 初始平台
+        first = PlatformFirst(Player.INIT_POS)
+        if Config.TEST_PLATFORM:
+            first=PlatformControl(self.player)
+            self.player.is_gaming=True
+
+        self.player.current_platform=first
+        self.platformsManager.platforms.append(first)
+
         self.trapManager = TarpManager(player=self.player, screen=self.screen)
         self.enemyManager = EnemyManager(self.player, self.screen, self.trapManager, self.platformsManager)
         self.event = Event(self.trapManager, self.screen)
+
 
 
 
@@ -91,6 +100,10 @@ class Game:
                 if event.key == pygame.K_w:
                     self.player.is_downed()
 
+            elif event.type == pygame.KEYDOWN and not Config.TEST_PLATFORM:
+                if event.key == pygame.K_s:
+                    self.player.down()
+
     def update(self):
         """更新阶段变化"""
 
@@ -101,13 +114,24 @@ class Game:
         self.player.check_collision()
         keys = pygame.key.get_pressed()
         self.player.check_collision()
-        if keys[pygame.K_w] or keys[pygame.K_SPACE]:
-            self.player.jump()
-        if keys[pygame.K_a]:
-            self.player.move(-self.player.speed)
-        elif keys[pygame.K_d]:
-            self.player.move(self.player.speed)
-        """其他对象"""
+        if Config.TEST_PLATFORM:
+            if keys[pygame.K_w] or keys[pygame.K_SPACE]:
+                self.player.pos[1] -=8
+            if keys[pygame.K_s] and Config.TEST_PLATFORM:
+                self.player.pos[1] += 8
+            if keys[pygame.K_a]:
+                self.player.pos[0] -=8
+            elif keys[pygame.K_d]:
+                self.player.pos[0] += 8
+        else:
+            if keys[pygame.K_w] or keys[pygame.K_SPACE]:
+                self.player.jump()
+
+            if keys[pygame.K_a]:
+                self.player.move(-self.player.speed)
+            elif keys[pygame.K_d]:
+                self.player.move(self.player.speed)
+        """平台和陷阱"""
         self.platformsManager.update(self.PLATFORM_TIME - self.rule.stage * 8)
         self.trapManager.auto_create_tarp(180)
         self.trapManager.update()
@@ -132,7 +156,7 @@ class Game:
             self.shake_amount=Global.shark_time
             Global.shark_time = 0
         if self.shake_amount > 0:
-            self.shake_amount -= 1  # 每帧减少
+            self.shake_amount -= 1  # 每帧减少打击
             if self.shake_amount < 0:
                 self.shake_amount = 0
 
@@ -145,13 +169,13 @@ class Game:
         self.trapManager.draw(self.game_canvas)
         self.enemyManager.draw()
         self.bg_color = self.rule.bg_color_get()
-        #震动参数
+        # 震动参数
         offset_x = 0
         offset_y = 0
         if self.shake_amount > 0:
             offset_x = random.randint(-int(self.shake_amount), int(self.shake_amount))
             offset_y = random.randint(-int(self.shake_amount), int(self.shake_amount))
-        self._display.fill((0, 0, 0))  # 底色涂黑，防止震动露白边
+        self._display.fill((0, 0, 0))
         self._display.blit(self.game_canvas, (offset_x, offset_y))
         # 显示信息
         self.render_debug_info()

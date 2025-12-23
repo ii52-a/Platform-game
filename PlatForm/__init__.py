@@ -9,3 +9,4 @@ from .Sp_Down_PlatForm import  SpDownPlatform
 from .SIP_RightMove_Platform import SIPrightMovePlatform
 from .SP_IceFragile_PlatForm import SPICEPlatform
 from .platform import Platform
+from .Player_Contal_platForm import PlatformControl

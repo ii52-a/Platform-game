@@ -29,7 +29,7 @@ class SlashEffect:
 
     def update(self):
         self.timer += 1
-        # 更新火花
+        # 颗粒
         for s in self.sparks:
             s["pos"][0] += s["vel"][0]
             s["pos"][1] += s["vel"][1]
@@ -50,7 +50,7 @@ class SlashEffect:
         p2 = (self.x + offset * math.cos(math.radians(self.angle)),
               self.y + offset * math.sin(math.radians(self.angle)))
 
-        # 刀光2（垂直于刀光1）
+        # 刀光2
         p3 = (self.x - offset * math.cos(math.radians(self.angle + 90)),
               self.y - offset * math.sin(math.radians(self.angle + 90)))
         p4 = (self.x + offset * math.cos(math.radians(self.angle + 90)),

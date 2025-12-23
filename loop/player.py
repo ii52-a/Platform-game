@@ -1,6 +1,7 @@
 import pygame
 
 import message
+from PlatForm import PlatformFirst
 
 from loop.Config import Screen, Config
 
@@ -28,7 +29,7 @@ class Player:
         self.is_downJumping = False
         self.is_grounded = True
         self.platformManager = platformmanager
-        self.current_platform = self.platformManager.platforms[0]  # 绑定初始平台
+        self.current_platform = None  # 绑定初始平台
         self.message = message.Message()
 
         self.damage_color=0
@@ -119,10 +120,22 @@ class Player:
     def move(self, speed):
         if not self.is_gaming:
             self.is_gaming = True
-            self.current_platform.is_gaming = True
+            for i in self.platformManager.platforms:
+                if isinstance(i,PlatformFirst):
+                    i.is_gaming=True
         if speed:
             self.pos[0] += speed
             self.left_right_limit()
+    def down(self):
+        if not self.is_gaming:
+            self.is_gaming = True
+            for i in self.platformManager.platforms:
+                if isinstance(i, PlatformFirst):
+                    i.is_gaming = True
+        if self.current_platform:
+            self.pos[1] +=self.current_platform.rect.height+2.7
+            self.leave_platform()
+            self.is_downJumping = True
 
     def is_damaging(self, damage, color=(255, 44, 44)):
         if self.is_gaming:
@@ -139,7 +152,6 @@ class Player:
 
         # TODO
         pass
-
     def gravity_down(self):
         self.height_limit()
         if not self.is_grounded:

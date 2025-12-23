@@ -38,7 +38,7 @@ class BlackHole(Enemy):
             self.call_laser()
             self.damage_counter = 0
         if self.health <= 0:
-            self.effect=BossDeathEffect(self.rect.centerx, self.rect.centery)
+            self.effect.append(BossDeathEffect(self.rect.centerx, self.rect.centery))
             self.is_alive = False
             rules.Rule.if_boss = False
         self.platform_create()
@@ -48,7 +48,7 @@ class BlackHole(Enemy):
         a=pygame.draw.circle(self.screen, (255, 37, 37), (self.rect.x, self.rect.y), radius=self.tx_radius, width=5)
         self.tx_radius += 6
 
-        if a.colliderect(self.player.get_rect()):
+        if self.check_circle_collision((self.rect.x, self.rect.y), self.tx_radius,self.player.pos,self.player.radius):
             self.trapManager.advance_create(
                 LockLaser(screen=self.screen, player=self.player,damage=2, if_advance_time=False))
         if self.tx_radius >= 220+(250-self.health):
