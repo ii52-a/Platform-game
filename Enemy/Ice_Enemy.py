@@ -24,7 +24,7 @@ class IceEnemy(Enemy):
         self.lock_radius = 20  # 圆环的半径
         self.damage_time=200
         self.once_locked=True
-        self.effect=None
+        self.effect=[]
 
     def draw(self):
         if self.locked_platform:
@@ -36,8 +36,10 @@ class IceEnemy(Enemy):
     def update(self):
         self.damage_counter += 1
         if self.health <= 0:
-            self.effect=CycleDeath(self.rect.centerx, self.rect.centery)
+            self.effect.append(CycleDeath(self.rect.centerx, self.rect.centery))
             self.is_alive = False
+            if rules.Rule.boss_stage==2:
+                Global.add_ice_death(1)
         if self.damage_counter >= 150 and self.once_locked:
            self.lock_break_platform()
            self.once_locked=False

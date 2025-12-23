@@ -13,7 +13,6 @@ class CycleDeath:
                  ):
         self.x = x
         self.y = y
-        # 冰特效建议使用亮蓝色
         self.color = color
         self.radius = 5
         self.max_radius = max_radius  # 扩散多大
@@ -23,7 +22,6 @@ class CycleDeath:
 
     def update(self):
         self.radius += self.speed
-        # 线条随半径增大而变细
         self.thickness = max(1, 6 - int((self.radius / self.max_radius) * 6))
 
         if self.radius >= self.max_radius:

@@ -44,7 +44,7 @@ class SlashEffect:
         # 1. 绘制“瞬时闪光”：两条交叉的极速斜线
         offset = 60 * (1 - self.timer / self.duration)  # 线条随时间缩短
 
-        # 刀光1（顺时针旋转）
+        # 刀光1
         p1 = (self.x - offset * math.cos(math.radians(self.angle)),
               self.y - offset * math.sin(math.radians(self.angle)))
         p2 = (self.x + offset * math.cos(math.radians(self.angle)),
@@ -56,7 +56,7 @@ class SlashEffect:
         p4 = (self.x + offset * math.cos(math.radians(self.angle + 90)),
               self.y + offset * math.sin(math.radians(self.angle + 90)))
 
-        # 绘制核心刀芒（白色粗线）
+        # 刀芒
         pygame.draw.line(screen, (210, 210, 210), p1, p2, 4)
         pygame.draw.line(screen, (210, 210, 210), p3, p4, 4)
 

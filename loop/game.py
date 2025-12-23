@@ -10,7 +10,7 @@ from PlatForm import PlatformFirst
 from player import Player
 from loop.Event import Event
 from message import Message
-import rules
+from loop.rules import Rule
 from Trap import *
 
 class Game:
@@ -46,14 +46,12 @@ class Game:
         self.reset_game()
 
     def reset_game(self):
-        """重置游戏到初始状态"""
-        # 创建/重新创建游戏对象
         self.running = True
         self.dt = 0
         self.now_stage = 1
 
         # 重新创建游戏规则和实例
-        self.rule = rules.Rule()
+        self.rule = Rule()
         self.rule.again()
         self.bg_color = self.rule.bg_color_get()
 
@@ -121,6 +119,8 @@ class Game:
             if self.now_stage == 4:
                 for _ in range(5):
                     self.trapManager.advance_create(Laser(self.player, self.screen))
+            if self.now_stage == 8:
+                self.player.speed+=5
 
         #玩家变化
         ck=pygame.time.get_ticks()
@@ -132,7 +132,7 @@ class Game:
             self.shake_amount=Global.shark_time
             Global.shark_time = 0
         if self.shake_amount > 0:
-            self.shake_amount -= 1  # 每帧减少强度
+            self.shake_amount -= 1  # 每帧减少
             if self.shake_amount < 0:
                 self.shake_amount = 0
 
@@ -140,7 +140,7 @@ class Game:
         # 绘制背景
         self.game_canvas.fill(self.bg_color)
 
-        self.player.draw(self.game_canvas)  # 注意：传的是 game_canvas
+        self.player.draw(self.game_canvas)
         self.platformsManager.draw_all_platforms(self.game_canvas)
         self.trapManager.draw(self.game_canvas)
         self.enemyManager.draw()
@@ -186,7 +186,6 @@ class Game:
         pygame.quit()
 
 
-# 启动游戏
 if __name__ == "__main__":
     game = Game()
     game.run()

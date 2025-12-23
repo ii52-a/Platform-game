@@ -58,6 +58,6 @@ class PlatformsManager:
 
     def check_collision(self, player_rect):
         for platform in self.platforms:
-            if platform.check_collision((player_rect[0], player_rect[1]+player_rect[3],player_rect[2]-10,5)):
+            if platform.check_collision((player_rect[0], player_rect[1]+player_rect[3],player_rect[2]-8,player_rect[3])):
                 return platform
         return None

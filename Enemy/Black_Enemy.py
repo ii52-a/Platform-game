@@ -13,7 +13,7 @@ class BlackEnemy(Enemy):
         self.health = 40 + rules.Rule.stage * 5
         self.damage_time = 200
         self.once_locked = True
-        self.effect = None
+        self.effect = []
         self.lack=None
 
     def draw(self):
@@ -24,7 +24,7 @@ class BlackEnemy(Enemy):
         if self.health <= 0 or self.radius <=6:
             self.is_alive = False
             # self.effect = IceDeath(self.rect.centerx, self.rect.centery,(91, 91, 91),110,3,8)
-            self.effect=SlashEffect(self.rect.centerx, self.rect.centery, self.color)
+            self.effect.append(SlashEffect(self.rect.centerx, self.rect.centery, self.color))
 
         if self.damage_counter >= self.damage_time:
             self.damage_counter = 0

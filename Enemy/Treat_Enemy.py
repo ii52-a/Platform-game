@@ -13,7 +13,7 @@ class TreatEnemy(Enemy):
         super().__init__(screen, player, traps, platform,y=y,width=width, height=height, radius=radius,
                  color=(79, 221, 60),enemy=None)
         self.health=300
-        self.effect=None
+        self.effect=[]
         self.once=True
 
     def draw(self):
@@ -35,5 +35,5 @@ class TreatEnemy(Enemy):
             self.health =0
             if self.once:
                 self.player.health += 10
-                self.effect = TreatDeath(self.player.pos[0], self.player.pos[1], self.color)
+                self.effect.append(TreatDeath(self.player.pos[0], self.player.pos[1], self.color))
                 self.once=False

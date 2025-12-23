@@ -31,7 +31,7 @@ class Enemy:
         self.trapManager = traps
         self.platform = platform
         self.enemyManager=enemy
-        self.effect=None
+        self.effect=[]
 
 
 
@@ -70,4 +70,4 @@ class Enemy:
         params.update(kwargs)     #合并额外属性
         new_obj=new_enemy(**params)   #直接传递
         self.enemyManager.enemies.append(new_obj)   #添加
-        return new_obj   #返回
+        return new_obj

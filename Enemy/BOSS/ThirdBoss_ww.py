@@ -84,8 +84,8 @@ class IceBlue(Enemy):
                 self.health-=5
                 self.enemyManager.enemies.append(self.create_new_enemy(IceEnemy))
                 dextra=(self.fhealth-self.health)//4
-                self.dx =random.randint(-14-dextra,14+dextra)
-                self.dy = random.randint(-8-dextra,8+dextra)
+                self.dx =random.randint(-28-dextra,28+dextra)
+                self.dy = random.randint(-24-dextra,24+dextra)
                 for _ in range(7):
                     self.trapt.append({
                         "pos": (random.randint(50, Screen.ScreenX - 50), random.randint(50, Screen.ScreenY - 50)),
@@ -94,8 +94,8 @@ class IceBlue(Enemy):
                     })
             else:
                 dextra=(self.fhealth-self.health)//6
-                self.dx =random.randint(-16-dextra,16+dextra)
-                self.dy = random.randint(-8-dextra,8+dextra)
+                self.dx =random.randint(-22-dextra,22+dextra)
+                self.dy = random.randint(-18-dextra,18+dextra)
                 for _ in range(8):
                     self.trapt.append({
                         "pos": (random.randint(50, Screen.ScreenX - 50), random.randint(50, Screen.ScreenY - 50)),
@@ -106,23 +106,23 @@ class IceBlue(Enemy):
         if abs(self.dx)>1 or abs(self.dy)>1:
             self.rect.x += self.dx
             self.rect.y += self.dy
-            self.dx *=0.98
-            self.dy *=0.98
+            self.dx *=0.97
+            self.dy *=0.97
         if self.rect.x-self.radius <=0:
             self.rect.x =self.radius
-            self.dx *=-1.2
+            self.dx *=-1.1
             self.health -=self.cz_self_damage
         if self.rect.x+self.radius >= Screen.ScreenX:
             self.rect.x = Screen.ScreenX-self.radius
-            self.dx *=-1.2
+            self.dx *=-1.1
             self.health -=self.cz_self_damage
         if self.rect.y+self.radius >= Screen.ScreenY:
             self.rect.y = Screen.ScreenY-self.radius
-            self.dy *=-1.2
+            self.dy *=-1.1
             self.health -= self.cz_self_damage
         if self.rect.y-self.radius <= 0:
             self.rect.y = self.radius
-            self.dy *=-1.2
+            self.dy *=-1.1
             self.health -= self.cz_self_damage
         if self.health <= 0:
             self.is_alive = False
@@ -131,9 +131,6 @@ class IceBlue(Enemy):
         if self.rect.colliderect(self.player.get_rect()) and now-self.damage_player_counter>=100:
             self.player.is_damaging(self.pz_damage)
             self.damage_player_counter=now
-            #深蓝折跃
-            self.rect.x=random.randint(50, Screen.ScreenX - 50)
-            self.rect.y=random.randint(50, Screen.ScreenY - 50)
         num= Global.read_ice_death()
         self.platform_create()
 

@@ -8,12 +8,9 @@ class Rule:
     stage = 1
     boss_stage=0
     if_boss=False
-
-    def __init__(self):
-        pass
-
     @classmethod
     def get_stage(cls):
+        # print(cls.stage)
         return cls.stage
     @classmethod
     def stage_change(cls, score):
@@ -32,8 +29,7 @@ class Rule:
             cls.stage = 6
         elif score <= 22000:
             cls.stage = 7
-        elif score <= 28000:
-            print(cls.stage)
+        elif score <= 50000:
             cls.stage = 8
         elif cls.score<=50000:
             cls.stage = 9
@@ -135,7 +131,7 @@ class Rule:
         elif cls.stage <=7:#浅蓝
             num= 1
         elif cls.stage <=8:  #深蓝之海
-            num= 1
+            num= 0
         else:
             num= 9
         return num+Config.TRAP_ADD

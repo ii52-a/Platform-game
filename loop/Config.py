@@ -17,7 +17,7 @@ class Config:
     TRAP_ADD=0
     #初始分数  决定阶段
     #标准 0
-    INIT_SCORE=20000
+    INIT_SCORE=22000
 
 
     #玩家生命值
