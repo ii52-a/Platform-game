@@ -22,6 +22,7 @@ class PlatformControl(Platform):
         self.speed_x = 0
         self.speed_y = 0
         self.is_gaming = False
+        self.no_break=True
 
     def update(self):
         # print(self.is_gaming)

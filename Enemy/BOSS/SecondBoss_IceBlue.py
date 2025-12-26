@@ -1,10 +1,12 @@
+import math
 import random
 
 import pygame
 
 from EffectGlobal import Global
+from Effects import CycleDeath, ParticlePoint
 from loop import rules
-from loop.Config import Config, Screen
+from loop.Config import Config, Screen, Show
 from Enemy import Enemy, IceEnemy
 
 """冰蓝"""
@@ -42,13 +44,17 @@ class IceBlue(Enemy):
 
         #碰撞自我扣血
         self.cz_self_damage=3
+        #连接打断扣血
+        self.kc_self_damage=3
 
         #碰撞玩家扣血
         self.pz_damage=5
         #碰撞冷却
         self.damage_player_counter=0
 
-        self.lock={}
+        #冰圈索敌
+        self.ice_lock_player=False
+        self.ice_lock_time=0
 
 
 
@@ -57,57 +63,85 @@ class IceBlue(Enemy):
         rules.Rule.if_boss = True
         rules.Rule.boss_stage = 2
         self.damage_counter += 1
+        if self.health > self.fhealth:
+            self.fhealth = self.health
         if self.damage_counter >= self.damage_time:
             self.health -=10
             # 第一阶段
             if self.health >= self.fhealth*3//4:
                 k_num=(self.fhealth-self.health) //10
-                for _ in range(2):
-                    self.enemyManager.enemies.append(self.create_new_enemy(IceEnemy))
-                for i in range(k_num):
-                    #深蓝打击
-                    new_trap = {
-                        "pos": (random.randint(50, Screen.ScreenX - 50), random.randint(50, Screen.ScreenY - 50)),
-                        "radius": 10,
-                        "color": (23, 255, 228)
-                    }
-                    self.trapt.append(new_trap)
+                self.summon_ice(2)
+
             #切换 过渡技能
             if self.health <= self.fhealth*3//4 and self.first_once:
                 self.dx=10
                 self.dy=10
-                for _ in range(3):
-                    self.enemyManager.enemies.append(self.create_new_enemy(IceEnemy))
-                #加快施法
-                self.damage_counter -=40
+                self.summon_ice(3)
+                #加快施法-强化
+                self.damage_time +=40
                 self.create_platform_counter-=10
                 self.cz_self_damage =2
                 self.first_once=False
+                self.kc_self_damage=5
             #第二阶段
             elif self.health >= self.fhealth//2:
-                self.health-=5
-                for _ in range(2):
-                    self.enemyManager.enemies.append(self.create_new_enemy(IceEnemy))
+                self.color=(0, 28, 111)
                 dextra=(self.fhealth-self.health)//5
-                self.dx =random.randint(-12-dextra,12+dextra)
-                self.dy = random.randint(-6-dextra,6+dextra)
-                for _ in range(7):
-                    self.trapt.append({
-                        "pos": (random.randint(50, Screen.ScreenX - 50), random.randint(50, Screen.ScreenY - 50)),
-                            "radius": 5,
-                            "color": (4, 148, 131)
-                    })
+                self.summon_ice(2)
+                self.summon_blue(7)
+                self.get_kinetic_energy(dextra,12,6)
             else:
+                self.health+=2
                 dextra=(self.fhealth-self.health)//10
-                self.dx =random.randint(-12-dextra,12+dextra)
-                self.dy = random.randint(-6-dextra,6+dextra)
-                for _ in range(8):
-                    self.trapt.append({
-                        "pos": (random.randint(50, Screen.ScreenX - 50), random.randint(50, Screen.ScreenY - 50)),
-                            "radius": 5,
-                            "color": (4, 148, 131)
-                    })
+                self.summon_ice(3)
+                self.summon_blue(8)
+                self.get_kinetic_energy(dextra,12,6)
+
             self.damage_counter = 0
+        #反弹
+        self.put_k_q()
+        #死亡
+        if self.health <= 0:
+            self.is_alive = False
+            rules.Rule.if_boss = False
+        now=pygame.time.get_ticks()
+        if self.check_circle_collision(self.rect,self.radius,self.player.pos,self.player.radius) and now-self.damage_player_counter>=100:
+            self.player.is_damaging(self.pz_damage)
+            self.damage_player_counter=now
+            #深蓝折跃
+            self.blue_jump()
+        self.apply_ice_pull()
+        self.platform_create()
+
+    def draw(self):
+        self.draw_blue()
+
+        w = self.radius if self.radius is not None else self.rect.width
+        self.message.font_draw("冰蓝", "", self.screen, self.rect.x + w, self.rect.y -10, self.color)
+        self.message.font_draw("HP", f"{self.health:.1f}", self.screen, self.rect.x + w, self.rect.y + 5, self.color)
+        if self.radius is not None:
+            pygame.draw.circle(self.screen, self.color, (self.rect.x, self.rect.y), radius=self.radius)
+        if self.ice_lock_player:
+            shrink_radius = 200 - self.ice_lock_time
+            if shrink_radius > 0:
+                pygame.draw.line(self.screen,(36,185,185),(self.rect.x,self.rect.y),self.player.pos,width=shrink_radius//30)
+                pygame.draw.circle(self.screen, (36, 185, 185), self.player.pos, shrink_radius, 6)
+
+
+        self.draw_absorb_ice_line()
+
+
+
+
+
+    def platform_create(self):
+        self.create_platform_counter+=1
+        if self.create_platform_counter > self.create_platform_cycle:
+            self.platform.boss_exPlatform()
+            self.create_platform_counter = 0
+
+    #触墙反弹
+    def put_k_q(self):
         if abs(self.dx)>1 or abs(self.dy)>1:
             self.rect.x += self.dx
             self.rect.y += self.dy
@@ -129,70 +163,111 @@ class IceBlue(Enemy):
             self.rect.y = self.radius
             self.dy *=-1.02
             self.health -= self.cz_self_damage
-        if self.health <= 0:
-            self.is_alive = False
-            rules.Rule.if_boss = False
-        now=pygame.time.get_ticks()
-        if self.rect.colliderect(self.player.get_rect()) and now-self.damage_player_counter>=100:
-            self.player.is_damaging(self.pz_damage)
-            self.damage_player_counter=now
-            #深蓝折跃
-            self.rect.x +=random.randint(-50, 50)
-            self.rect.y +=random.randint(-50,  50)
-            self.dx +=12
-            self.dy +=12
+    #深蓝折跃
+    def blue_jump(self):
+        self.rect.x += random.randint(-50, 50)
+        self.rect.y += random.randint(-50, 50)
+        self.dx += 12
+        self.dy += 12
+    #召唤小怪-冰寒
+    def summon_ice(self,number):
+        for _ in range(number+Show.ICE_BLUE_SUMMON_ADD):
+            self.enemyManager.enemies.append(self.create_new_enemy(IceEnemy,if_name=False))
 
-        for i in list(self.lock.keys()):
-            if i not in self.enemyManager.enemies:
-                self.lock.pop(i)
-        self.platform_create()
+    #深蓝打击！
+    def summon_blue(self,number):
+        for _ in range(number):
+            ax=random.randint(50, Screen.ScreenX - 50)
+            bx=random.randint(50, Screen.ScreenX - 50)
+            self.trapt.append({
+                "pos": (ax,bx),
+                "radius": 5,
+                "color": (4, 148, 131)
+            })
+    #装载动能
+    def get_kinetic_energy(self,dextra,k1,k2):
+        self.dx = random.randint(-k1 - dextra, k1 + dextra)
+        self.dy = random.randint(-k2 - dextra, k2 + dextra)
 
-    def draw(self):
+    #冰圈索敌
+    def lock_player(self):
+        pass
+
+    #拉取冰寒
+    def apply_ice_pull(self):
+        """冰寒拉取"""
+        extra = (self.damage_time - self.damage_counter +(self.fhealth-self.health)//10) // 1.2
+        pull_range = self.radius + extra
+        if self.check_circle_collision((self.rect.x, self.rect.y), pull_range, self.player.pos, self.player.radius):
+            if not self.ice_lock_player:
+                self.ice_lock_player=True
+            self.ice_lock_time+=2
+            dx = self.rect.x - self.player.pos[0]
+            dy = self.rect.y - self.player.pos[1]
+            self.player.pos[0] += dx * 0.01 + (0.01 if self.health <=self.fhealth//2 else 0)
+            self.player.pos[1] += dy * 0.01
+            time = 200 - self.ice_lock_time
+            if time <= 0:
+                self.player.is_damaging(5)
+                Global.shark_time = 8
+                self.ice_lock_player = False
+                self.ice_lock_time = 0
+
+        else:
+            self.ice_lock_player=False
+            self.ice_lock_time=0
+
+        #吸怪
+        for i in self.enemyManager.enemies:
+            if isinstance(i, IceEnemy):
+                i.boss=None
+                if self.check_circle_collision((self.rect.x, self.rect.y), pull_range, i.rect, i.radius):
+                    i.boss=self
+                    dx = self.rect.x - i.rect.x
+                    dy = self.rect.y - i.rect.y
+                    dist = math.sqrt(dx ** 2 + dy ** 2)
+
+                    if dist > 2:
+                        pull_speed = 1.3 +(0.5*self.damage_counter/self.damage_time)
+                        i.rect.x += (dx / dist) * pull_speed
+                        i.rect.y += (dy / dist) * pull_speed
+                    else:
+                        if self.health >= self.fhealth // 2:
+                            i.is_alive=False
+                            self.effect.append(CycleDeath(self.rect.x, self.rect.y, self.color,max_radius=240,speed=3))
+                            self.summon_blue(2)
+                            self.damage_counter += 50
+                            self.health +=2
+
+    #画-深蓝打击
+    def draw_blue(self):
         if self.trapt:
             #深蓝打击
             for i in self.trapt[:]:
                 i["radius"] *=1.02
                 u=pygame.draw.circle(self.screen,i["color"],i["pos"],i["radius"],4)
-                if u.colliderect(self.player.get_rect()):
-                    self.player.is_damaging(damage=5)
+                if self.check_circle_collision(i["pos"],i['radius'],self.player.pos,self.player.radius):
+                    self.player.is_damaging(damage=3)
                     self.trapt.remove(i)
                     continue
                 if i["radius"] >= 75:
                     self.trapt.remove(i)
                     Global.shark_time=6
+    #画-吸收牵引线
+    def draw_absorb_ice_line(self):
 
-        w = self.radius if self.radius is not None else self.rect.width
-        self.message.font_draw("冰蓝", "", self.screen, self.rect.x + w, self.rect.y -10, self.color)
-        self.message.font_draw("HP", f"{self.health:.1f}", self.screen, self.rect.x + w, self.rect.y + 5, self.color)
-        extra=(self.damage_time-self.damage_counter) // 1.2
-        if self.radius is not None:
-            pygame.draw.circle(self.screen, self.color, (self.rect.x, self.rect.y), radius=self.radius)
+        extra = (self.damage_time - self.damage_counter+(self.fhealth-self.health)//10) // 1.2
+        pull_range = self.radius + extra
+        pygame.draw.circle(self.screen, self.color, (self.rect.x, self.rect.y), pull_range, 5)
 
-        b=pygame.draw.circle(self.screen, self.color, (self.rect.x, self.rect.y),self.radius+extra,5)
-        #圆环内boss技能: 吸收 冰寒强化自身
         for i in self.enemyManager.enemies:
-            if self.circle_collision(b,i.rect) and isinstance(i,IceEnemy):
-                if i not in self.lock.keys():
-                    self.lock.setdefault(i,0)
-                elif self.lock[i]>=200:
-                    i.is_alive=False
-                    self.health +=2
-                    self.damage_counter+=240
-                else:
-                    self.lock[i]+=1
-                    pygame.draw.line(self.screen, i.color, (self.rect.centerx, self.rect.centery),
-                                     (i.rect.x, i.rect.y))
+            if isinstance(i, IceEnemy):
+                if self.check_circle_collision((self.rect.x, self.rect.y), pull_range, i.rect, i.radius):
+                    pygame.draw.line(self.screen, i.color, (self.rect.x, self.rect.y),
+                                     (i.rect.x, i.rect.y), 1)
 
-
-
-
-    def platform_create(self):
-        self.create_platform_counter+=1
-        if self.create_platform_counter > self.create_platform_cycle:
-            self.platform.boss_exPlatform()
-            self.create_platform_counter = 0
-
-
-
+    def link_self_damage(self):
+        self.health-=self.kc_self_damage
+        self.damage_counter -= 20
     def __del__(self):
         pass

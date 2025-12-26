@@ -14,7 +14,7 @@ class Player:
         self.health = Config.PLAYER_HEALTH  #生命值
         self.pos = self.INIT_POS  #坐标
 
-        self.speed = 7  # 初始速度
+        self.speed = 9  # 初始速度
 
         self.radius = 20
         self.color = (5, 5, 5)

@@ -5,7 +5,7 @@ import pygame
 from EffectGlobal import Global
 from Manager import *
 
-from loop.Config import Screen, Version, Config
+from loop.Config import Screen, Version, Config, Show
 from PlatForm import PlatformFirst, PlatformControl
 from player import Player
 from loop.Event import Event
@@ -185,7 +185,15 @@ class Game:
 
     def render_debug_info(self):
         # 玩家信息
-        vel_text_platform_count = len(self.platformsManager.platforms)
+        vel_text_status = []
+        if Config.TEST_PLATFORM:
+            vel_text_status.append("移动测试")
+        if Config.PLAYER_NO_DAMP:
+            vel_text_status.append("免疫掉落")
+        if Show.TRAP_ADD:
+            vel_text_status.append("陷阱表演模式")
+        if Config.PLAYER_HEALTH>=10000:
+            vel_text_status.append("无限生命")
         vel_text_health = f"{Version.VERSION_STR}"
         vel_text_score = f" {self.event.score:.1f}"
         vel_text_stage = f"{self.rule.stage}"
@@ -194,7 +202,7 @@ class Game:
         vel_text_world_color=self.rule.world_get()[1]
         self.message.font_draw('version:', vel_text_health, self._display, 10, 10)
         self.message.font_draw("history:",vel_text_history,self._display,10,40)
-        self.message.font_draw('platform_count:', vel_text_platform_count, self._display, 10, 70)
+        self.message.font_draw('status:', vel_text_status, self._display, 10, 70)
         self.message.font_draw('world:',vel_text_world,self._display,10,100,color=vel_text_world_color)
         self.message.font_draw('score:', vel_text_score, self._display, 10, 130)
         self.message.font_draw('stage:', vel_text_stage, self._display, 10, 160)

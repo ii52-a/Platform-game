@@ -24,6 +24,7 @@ class Platform:
         self.message = message.Message()
         self.last_pos = [self.rect.x, self.rect.y]
         self.player=None
+        self.no_break=False
 
     def bind_player(self,player):
         self.player=player

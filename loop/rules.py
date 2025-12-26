@@ -1,6 +1,6 @@
 import random
 
-from loop.Config import Config
+from loop.Config import Config, Show
 
 
 class Rule:
@@ -134,7 +134,7 @@ class Rule:
             num= 0
         else:
             num= 9
-        return num+Config.TRAP_ADD
+        return num+Show.TRAP_ADD
 
     @classmethod
     def create_enemy(cls,listt):

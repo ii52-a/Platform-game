@@ -46,6 +46,7 @@ class BossDeathEffect:
             self.is_alive = False
             Global.shark_time = 0
 
+
     def draw(self, screen):
         if 70 < self.timer < 85:
             # ?
