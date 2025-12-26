@@ -10,7 +10,7 @@ class BossDeathEffect:
         self.color = color
         self.timer = 0
         self.duration = 200  # 总时长
-        self.is_alive = True
+        self.is_active = True
 
         # 产生碎片
         self.particles = []
@@ -43,7 +43,7 @@ class BossDeathEffect:
                 p["pos"][1] += p["vel"][1] * 3
 
         if self.timer >= self.duration:
-            self.is_alive = False
+            self.is_active = False
             Global.shark_time = 0
 
 

@@ -62,7 +62,7 @@ class Enemy:
         pass
 
 
-    #属性定义修饰
+    #属性定义修饰,类似于计算属性
     @property
     def context(self):
         return {
@@ -88,12 +88,9 @@ class Enemy:
         pos2: 第二个圆的中心点 (x, y)
         radius2: 第二个圆的半径
         """
-        # 计算两个圆心的横纵距离差
         dx = pos1[0] - pos2[0]
         dy = pos1[1] - pos2[1]
-        # 勾股定理计算圆心距
         distance = math.sqrt(dx ** 2 + dy ** 2)
-        # 如果圆心距小于两个半径之和，则碰撞
         return distance <= (radius1 + radius2)
 
 

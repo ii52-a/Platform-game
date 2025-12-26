@@ -1,5 +1,6 @@
 import random
 
+from Manager.PlatFormGenerator import SimpleGenerator
 from loop import rules
 from PlatForm import *
 
@@ -7,19 +8,23 @@ class PlatformsManager:
     def __init__(self):
         self.platforms = []
         self.effects=[]
-        self.spawn_counter = 0
         self.rules = rules.Rule()
 
-    def update(self, spawn_interval):
-        self.spawn_counter += 1  # 每帧增加
-        # 显示当前计数器和间隔
-
-        if self.spawn_counter >= spawn_interval:
-            self.spawn_create_SIPplatform()
-            if random.random() < 0.05 + 0.05 * self.rules.stage:
-                self.spawn_create_platform()
-
-            self.spawn_counter = 0  # 重置计数器
+        #规则内核
+        self.generator=SimpleGenerator(self.platforms,self.rules)
+    #region
+    def update(self):
+        # TODO:使用规则模态代替，实现平台生成可定义
+        # self.spawn_counter += 1  # 每帧增加
+        #
+        # if self.spawn_counter >= spawn_interval:
+        #     self.spawn_create_SIPplatform()
+        #     if random.random() < 0.05 + 0.05 * self.rules.stage:
+        #         self.spawn_create_platform()
+        #
+        #     self.spawn_counter = 0  # 重置计数
+        #实现规则更新
+        self.generator.update()
         for p in self.platforms:
             if not p.is_active:
                 self.platforms.remove(p)
@@ -27,13 +32,14 @@ class PlatformsManager:
             else:
                 p.update()
         for e in self.effects:
-            if not e.is_alive:
+            if not e.is_active:
                 self.effects.remove(e)
                 del e
             else:
                 e.update()
 
 
+    """废弃"""
 
     def spawn_create_SIPplatform(self):
         self.platforms.append(self.rules.sample_platform_create_rule(
@@ -61,3 +67,4 @@ class PlatformsManager:
             if platform.check_collision((player_rect[0], player_rect[1]+player_rect[3],player_rect[2]-8,player_rect[3])):
                 return platform
         return None
+    #endregion

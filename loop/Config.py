@@ -13,6 +13,7 @@ class Show:
     TRAP_ADD=0
     #增加冰蓝释放技能时的冰寒召唤数量
     ICE_BLUE_SUMMON_ADD=0
+
 class Config:
     #test 自移动平台,生成一个随玩家移动的平台代替初始平台
     #标准 False
@@ -26,7 +27,7 @@ class Config:
 
     #初始分数  决定阶段
     #标准 0
-    INIT_SCORE=0000
+    INIT_SCORE=000
 
 
     #玩家生命值

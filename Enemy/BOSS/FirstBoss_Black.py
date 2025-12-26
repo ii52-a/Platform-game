@@ -79,12 +79,7 @@ class BlackHole(Enemy):
         self.trapManager.advance_create(Laser(screen=self.screen, player=self.player))
 
     def platform_create(self):
-        self.create_platform_counter+=1
-        if self.create_platform_counter > self.create_platform_cycle:
-            self.platform.boss_exPlatform()
-            self.create_platform_counter = 0
-            self.trapManager.advance_create(Laser(screen=self.screen, player=self.player))
-
+        pass
 
 
     def __del__(self):

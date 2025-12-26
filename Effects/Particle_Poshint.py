@@ -9,21 +9,20 @@ class ParticlePoint:
         self.pos = pygame.Vector2(start_pos)
         self.end_pos = pygame.Vector2(end_pos)
 
-        # 阶段时间控制（帧数）
-        self.scatter_time = scatter_time  # 散射持续多久（例如 20 帧）
-        self.travel_time = travel_time  # 飞行持续多久（例如 40 帧）
+
+        self.scatter_time = scatter_time
+        self.travel_time = travel_time
         self.current_frame = 0
 
-        # 散射阶段的随机初速度
+
         angle = random.uniform(0, 2 * math.pi)
         speed = random.uniform(5, 12)
         self.vel = pygame.Vector2(math.cos(angle) * speed, math.sin(angle) * speed)
 
         self.color = color
         self.radius = radius
-        self.is_alive = True
+        self.is_active = True
 
-        # 记录散射结束时的位置，作为第二阶段的起点
         self.mid_pos = None
 
     def update(self):
@@ -49,7 +48,7 @@ class ParticlePoint:
             self.pos = self.mid_pos.lerp(self.end_pos, eased_t)
 
         else:
-            self.is_alive = False
+            self.is_active = False
 
     def draw(self, screen):
         pygame.draw.circle(screen, self.color, (int(self.pos.x), int(self.pos.y)), self.radius)

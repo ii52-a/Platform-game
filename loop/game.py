@@ -14,7 +14,6 @@ from loop.rules import Rule
 from Trap import *
 
 class Game:
-    PLATFORM_TIME = 100
 
     def __init__(self):
         # 初始化pygame
@@ -132,7 +131,7 @@ class Game:
             elif keys[pygame.K_d]:
                 self.player.move(self.player.speed)
         """平台和陷阱"""
-        self.platformsManager.update(self.PLATFORM_TIME - self.rule.stage * 8)
+        self.platformsManager.update()
         self.trapManager.auto_create_tarp(180)
         self.trapManager.update()
         self.enemyManager.update()

@@ -17,16 +17,16 @@ class CycleDeath:
         self.radius = 5
         self.max_radius = max_radius  # 扩散多大
         self.speed = speed  # 扩散多快
-        self.thickness = thickness  # 初始线条粗细
-        self.is_alive = True
+        self.thickness = thickness  # 线条粗细
+        self.is_active = True
 
     def update(self):
         self.radius += self.speed
         self.thickness = max(1, 6 - int((self.radius / self.max_radius) * 6))
 
         if self.radius >= self.max_radius:
-            self.is_alive = False
+            self.is_active = False
 
     def draw(self, screen):
-        if self.is_alive:
+        if self.is_active:
             pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius, self.thickness)

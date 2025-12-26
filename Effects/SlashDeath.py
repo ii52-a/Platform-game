@@ -12,7 +12,7 @@ class SlashEffect:
         self.color = color
         self.timer = 0
         self.duration = 120  # 持续20帧
-        self.is_alive = True
+        self.is_active = True
 
 
 
@@ -36,12 +36,12 @@ class SlashEffect:
             s["vel"][1] += 0.2  # 重力感
 
         if self.timer > self.duration:
-            self.is_alive = False
+            self.is_active = False
 
     def draw(self, screen):
-        if not self.is_alive: return
+        if not self.is_active: return
 
-        # 1. 绘制“瞬时闪光”：两条交叉的极速斜线
+        # 1. 绘制“瞬时闪光”
         offset = 60 * (1 - self.timer / self.duration)  # 线条随时间缩短
 
         # 刀光1

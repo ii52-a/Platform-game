@@ -39,12 +39,11 @@ class EnemyManager:
                 self.enemies.remove(p)
                 del p
             else:
-
                 p.update()
 
         for e in self.effects[:]:
             e.update()
-            if not e.is_alive:
+            if not e.is_active:
                 self.effects.remove(e)
     def draw(self):
         for i in self.enemies:
