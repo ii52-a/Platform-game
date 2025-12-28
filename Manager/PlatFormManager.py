@@ -14,16 +14,8 @@ class PlatformsManager:
         self.generator=SimpleGenerator(self.platforms,self.rules)
     #region
     def update(self):
-        # TODO:使用规则模态代替，实现平台生成可定义
-        # self.spawn_counter += 1  # 每帧增加
-        #
-        # if self.spawn_counter >= spawn_interval:
-        #     self.spawn_create_SIPplatform()
-        #     if random.random() < 0.05 + 0.05 * self.rules.stage:
-        #         self.spawn_create_platform()
-        #
-        #     self.spawn_counter = 0  # 重置计数
-        #实现规则更新
+        if not self.generator:
+            self.update_generator(SimpleGenerator(self.platforms,self.rules))
         self.generator.update()
         for p in self.platforms:
             if not p.is_active:
@@ -37,24 +29,9 @@ class PlatformsManager:
                 del e
             else:
                 e.update()
-
-
-    """废弃"""
-
-    def spawn_create_SIPplatform(self):
-        self.platforms.append(self.rules.sample_platform_create_rule(
-            [SIPHighPlatform, PlatformKSP, Platform,SpFragilePlatform,SPICEPlatform,SPICEPlatformQ,]
-        ))
-
-    def spawn_create_platform(self):
-        self.platforms.append(self.rules.platform_create_rule([
-            SpUpPlatform, SpDownPlatform, SpFragilePlatform,SPICEPlatform,SPICEPlatformQ
-        ]))
-
-    def boss_exPlatform(self):
-                self.platforms.append(self.rules.platform_boss_rule([
-                    SIPrightMovePlatform,SPrightFrpPlatform,SPICEPlatform,SPICEPlatformQ,
-                ]))
+    def update_generator(self,generator):
+        self.generator = generator(self.platforms,self.rules)
+        # print(self.generator)
 
     def draw_all_platforms(self, screen):
         for platform in self.platforms:

@@ -5,12 +5,13 @@ from EffectGlobal import Global
 
 class BossDeathEffect:
 
-    def __init__(self, x, y, color=(255, 50, 50)):
+    def __init__(self, x, y, color=(255, 50, 50),func=None):
         self.x, self.y = x, y
         self.color = color
         self.timer = 0
         self.duration = 200  # 总时长
         self.is_active = True
+        self.func = func
 
         # 产生碎片
         self.particles = []

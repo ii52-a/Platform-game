@@ -57,7 +57,7 @@ class Game:
 
         # 重新创建所有游戏对象
         self.platformsManager = PlatformsManager()
-        self.platformsManager.spawn_create_platform()
+        # self.platformsManager.spawn_create_platform()
         self.player = Player(self.platformsManager)
 
         self.player.pos = [Player.INIT_POS[0], Player.INIT_POS[1]]
@@ -109,10 +109,8 @@ class Game:
 
         """玩家效果"""
         # 更新玩家物理状态
-        self.player.gravity_down()
-        self.player.check_collision()
+
         keys = pygame.key.get_pressed()
-        self.player.check_collision()
         if Config.TEST_PLATFORM:
             if keys[pygame.K_w] or keys[pygame.K_SPACE]:
                 self.player.pos[1] -=8
@@ -149,7 +147,8 @@ class Game:
         ck=pygame.time.get_ticks()
         if ck-self.player.damage_color >500:
             self.player.init_color()
-
+        self.player.gravity_down()
+        self.player.check_collision()
         #屏幕打击感
         if Global.shark_time>self.shake_amount:
             self.shake_amount=Global.shark_time
@@ -197,14 +196,21 @@ class Game:
         vel_text_score = f" {self.event.score:.1f}"
         vel_text_stage = f"{self.rule.stage}"
         vel_text_history = f"{self.history_max}"
+        vel_text_generator=f"{self.platformsManager.generator}"
         vel_text_world=f"{self.rule.world_get()[0]}"
         vel_text_world_color=self.rule.world_get()[1]
-        self.message.font_draw('version:', vel_text_health, self._display, 10, 10)
-        self.message.font_draw("history:",vel_text_history,self._display,10,40)
-        self.message.font_draw('status:', vel_text_status, self._display, 10, 70)
-        self.message.font_draw('world:',vel_text_world,self._display,10,100,color=vel_text_world_color)
-        self.message.font_draw('score:', vel_text_score, self._display, 10, 130)
-        self.message.font_draw('stage:', vel_text_stage, self._display, 10, 160)
+        vel_height=10
+        def vel_height_auto():
+            nonlocal vel_height
+            vel_height+=30
+            return vel_height-30
+        self.message.font_draw('version:', vel_text_health, self._display, 10, vel_height_auto())
+        self.message.font_draw("history:",vel_text_history,self._display,10,vel_height_auto())
+        self.message.font_draw('status:', vel_text_status, self._display, 10, vel_height_auto())
+        self.message.font_draw('world:',vel_text_world,self._display,10,vel_height_auto(),color=vel_text_world_color)
+        self.message.font_draw('generator:',vel_text_generator,self._display,10,vel_height_auto())
+        self.message.font_draw('score:', vel_text_score, self._display, 10, vel_height_auto())
+        self.message.font_draw('stage:', vel_text_stage, self._display, 10, vel_height_auto())
 
     def run(self):
         while self.running:

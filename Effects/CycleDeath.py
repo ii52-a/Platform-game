@@ -9,7 +9,8 @@ class CycleDeath:
     圆波扩散
     """
     def __init__(self, x, y,
-                 color=(32, 32, 238),max_radius=90,speed=3,thickness=6
+                 color=(32, 32, 238),max_radius=90,speed=3,thickness=6,
+                 func=None
                  ):
         self.x = x
         self.y = y
@@ -19,6 +20,7 @@ class CycleDeath:
         self.speed = speed  # 扩散多快
         self.thickness = thickness  # 线条粗细
         self.is_active = True
+        self.func=func
 
     def update(self):
         self.radius += self.speed

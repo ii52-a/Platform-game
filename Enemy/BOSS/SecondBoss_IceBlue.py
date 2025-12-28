@@ -4,7 +4,8 @@ import random
 import pygame
 
 from EffectGlobal import Global
-from Effects import CycleDeath, ParticlePoint
+from Effects import CycleDeath
+from Manager.PlatFormGenerator import IceBlueGenerator, SimpleGenerator
 from loop import rules
 from loop.Config import Config, Screen, Show
 from Enemy import Enemy, IceEnemy
@@ -20,7 +21,7 @@ class IceBlue(Enemy):
         self.rect.x = 640
         self.rect.y = 120
 
-
+        self.use_sp_platform_generator(IceBlueGenerator)
 
         #技能
         self.damage_counter = 120
@@ -106,12 +107,11 @@ class IceBlue(Enemy):
             rules.Rule.if_boss = False
         now=pygame.time.get_ticks()
         if self.check_circle_collision(self.rect,self.radius,self.player.pos,self.player.radius) and now-self.damage_player_counter>=100:
-            self.player.is_damaging(self.pz_damage)
+            self.health -=2
             self.damage_player_counter=now
             #深蓝折跃
             self.blue_jump()
         self.apply_ice_pull()
-        self.platform_create()
 
     def draw(self):
         self.draw_blue()
@@ -134,11 +134,6 @@ class IceBlue(Enemy):
 
 
 
-    def platform_create(self):
-        self.create_platform_counter+=1
-        if self.create_platform_counter > self.create_platform_cycle:
-            self.platform.boss_exPlatform()
-            self.create_platform_counter = 0
 
     #触墙反弹
     def put_k_q(self):
@@ -167,8 +162,8 @@ class IceBlue(Enemy):
     def blue_jump(self):
         self.rect.x += random.randint(-50, 50)
         self.rect.y += random.randint(-50, 50)
-        self.dx += 12
-        self.dy += 12
+        self.dx += 15
+        self.dy += 15
     #召唤小怪-冰寒
     def summon_ice(self,number):
         for _ in range(number+Show.ICE_BLUE_SUMMON_ADD):
@@ -206,7 +201,7 @@ class IceBlue(Enemy):
             dy = self.rect.y - self.player.pos[1]
             self.player.pos[0] += dx * 0.01 + (0.01 if self.health <=self.fhealth//2 else 0)
             self.player.pos[1] += dy * 0.01
-            time = 200 - self.ice_lock_time
+            time = 150 - self.ice_lock_time
             if time <= 0:
                 self.player.is_damaging(5)
                 Global.shark_time = 8
@@ -237,7 +232,7 @@ class IceBlue(Enemy):
                             self.effect.append(CycleDeath(self.rect.x, self.rect.y, self.color,max_radius=240,speed=3))
                             self.summon_blue(2)
                             self.damage_counter += 50
-                            self.health +=2
+                            self.health +=4
 
     #画-深蓝打击
     def draw_blue(self):
@@ -270,4 +265,6 @@ class IceBlue(Enemy):
         self.health-=self.kc_self_damage
         self.damage_counter -= 20
     def __del__(self):
-        pass
+        self.use_sp_platform_generator(SimpleGenerator)
+        rules.Rule.if_boss=False
+        rules.Rule.stage=9

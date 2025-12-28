@@ -60,6 +60,5 @@ class SlashEffect:
         pygame.draw.line(screen, (210, 210, 210), p1, p2, 4)
         pygame.draw.line(screen, (210, 210, 210), p3, p4, 4)
 
-        # 2. 绘制喷溅火花
         for s in self.sparks:
             pygame.draw.circle(screen, self.color, (int(s["pos"][0]), int(s["pos"][1])), int(s["size"]))

@@ -9,6 +9,7 @@ from loop.Config import Screen
 class Enemy:
     def __init__(self, screen, player, traps, platform,enemy, x=None, y=None, width=50, height=50, radius=None,
                  color=(0, 0, 0)):
+        self.generator = None
         x = random.randint(0, Screen.ScreenX - 1) if x is None else x
         y = random.randint(0, 720 - 1) if y is None else y
         self.radius = 20 if radius is None else radius
@@ -61,6 +62,12 @@ class Enemy:
     def apply_damage(self):
         pass
 
+    def use_sp_platform_generator(self,generator):
+        """
+        启用特殊阶段平台生成
+        """
+        self.generator=generator
+        self.platform.update_generator(self.generator)
 
     #属性定义修饰,类似于计算属性
     @property

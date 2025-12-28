@@ -25,14 +25,12 @@ class Rule:
             cls.stage = 4
         elif score <= 10000:
             cls.stage = 5
-        elif score <=15000:
+        elif score <=15500:
             cls.stage = 6
         elif score <= 22000:
             cls.stage = 7
         elif score <= 50000:
             cls.stage = 8
-        elif cls.score<=50000:
-            cls.stage = 9
     def world_get(self):
         if self.stage == 1:
             return "白昼",(136, 137, 144)
@@ -41,7 +39,7 @@ class Rule:
         elif self.stage == 3:
             return "起源",(59, 59, 59)
         elif self.stage == 4:
-            return "迷惘",(76, 76, 76)
+            return "希望",(76, 76, 76)
         elif self.stage == 5:
             return "红色黑洞",(255, 29, 29)
         elif self.stage == 6:
@@ -50,8 +48,10 @@ class Rule:
             return "浅蓝",(36, 233, 255)
         elif self.stage == 8:
             return "深蓝之海",(50, 71, 255)
+        elif self.stage == 9:
+            return "迷惘-覆灭",(255, 29, 29)
         else:
-            return "新世界",(0,0,0)
+            return "迷惘宇宙",(255, 29, 29)
 
     @classmethod
     def again(cls):
@@ -75,6 +75,9 @@ class Rule:
         bl_color = (24, 145, 225)
         #深蓝之海
         sl_color =(0, 26, 255)
+
+        #覆灭者
+        fm_color=(10,10,10)
         if cls.stage == 1 or cls.stage == 3:
             return simple_color
         elif cls.stage == 2:
@@ -89,32 +92,15 @@ class Rule:
             return bl_color
         elif cls.stage == 8:
             return sl_color
+        elif cls.stage == 9:
+            return fm_color
         else:
             return simple_color
 
     """平台规则"""
 
-    @classmethod
-    def sample_platform_create_rule(cls,listt):
-        """SIPHighPlatform, PlatformKSP, Platform,SpFragilePlatform,SPICEPlatform,SPICEPlatformQ,"""
-        ot = []
-        if cls.stage == 1:
-            ot = [30, 35, 25, 10]
-        elif cls.stage == 2:
-            ot = [20, 40, 20, 20]
-        elif cls.stage == 3:
-            ot = [25, 40, 20, 15]
-        elif cls.stage == 7:
-            ot= [0,5,5,5,55,30]
-        elif cls.stage == 8:
-            ot=[40,20,20,0,10,10]
-        else:
-            ot = [30, 35, 15, 20]
-        if len(ot) <len(listt):
-            ot+=[0]*(len(listt)-len(ot))
-        return random.choices(population=listt, weights=ot, k=1)[0]()
-
-
+    #移除
+    """陷阱规则"""
     @classmethod
     def trap_lack_num(cls):
         num = 0
@@ -122,10 +108,8 @@ class Rule:
             num= 1
         elif cls.stage <= 4:
             num= 2
-        elif cls.stage ==5 and not cls.if_boss:
-            num= 3
-        elif cls.stage == 5 and cls.if_boss:
-            num= 1
+        elif cls.stage == 5:
+            num= 0
         elif cls.stage <=6:
             num= 1
         elif cls.stage <=7:#浅蓝
@@ -142,7 +126,7 @@ class Rule:
         if cls.stage <=4:
             ot = [30,70,0]
         elif cls.stage <=6:
-            ot =[80,20,0]
+            ot =[50,50,0]
         elif cls.stage <=7:
             ot =[5,5,90]
         elif cls.stage <=8:
@@ -186,10 +170,10 @@ class Rule:
 
 
     def trap_create_rule(self,listt):
-        ot = []
         """
             Laser, LockLaser, MoveLaser,RectXLaser,XLOCKLaser
         """
+        ot = []
         if self.stage == 1 or self.stage == 2:
             ot=[33,33,34,0]
         elif self.stage == 3:
@@ -208,15 +192,5 @@ class Rule:
             ot+=[0]*(len(listt)-len(ot))
         return random.choices(population=listt, weights=ot, k=1)[0]
 
-    @classmethod
-    def platform_boss_rule(cls,listt):
-        ot = []
-        """SIPrightMovePlatform,SPrightFrpPlatform,SPICEPlatform,SPICEPlatformQ,"""
-        if cls.boss_stage == 1:
-            ot = [50,50]
-        elif cls.boss_stage == 2:
-            ot = [100]
-        if len(ot) < len(listt):
-            ot+=[0]*(len(listt)-len(ot))
-        return random.choices(population=listt, weights=ot, k=1)[0]()
+
 

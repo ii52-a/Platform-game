@@ -4,7 +4,7 @@ class Screen:
     ScreenY=720
 
 class Version:
-    VERSION_STR="a4.3"
+    VERSION_STR="a5.4"
 
 
 class Show:
@@ -27,13 +27,13 @@ class Config:
 
     #初始分数  决定阶段
     #标准 0
-    INIT_SCORE=000
+    INIT_SCORE=22000
 
 
     #玩家生命值
     #标准 100
     # PLAYER_HEALTH=9999999.9
-    PLAYER_HEALTH=100
+    PLAYER_HEALTH=2000
     #额外分数获得
     #标准 100
     EXTRA_SCORE=150

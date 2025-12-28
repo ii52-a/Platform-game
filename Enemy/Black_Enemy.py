@@ -7,10 +7,11 @@ from Effects import *
 
 
 class BlackEnemy(Enemy):
-    def __init__(self, screen, player, traps, platform,enemy, width=50, height=50, radius=30):
+    def __init__(self, screen, player, traps, platform,enemy,x=None, y=None,
+                 health=40,width=50, height=50, radius=30):
         super().__init__(screen, player, traps, platform, width=width, height=height, radius=radius,
-                         color=(45, 45, 45),enemy=enemy)
-        self.health = 40 + rules.Rule.stage * 5
+                         color=(45, 45, 45),enemy=enemy,x=x,y=y)
+        self.health = health + rules.Rule.stage * 5
         self.damage_time = 200
         self.once_locked = True
         self.effect = []

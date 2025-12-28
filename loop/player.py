@@ -20,7 +20,7 @@ class Player:
         self.color = (5, 5, 5)
         self.velocity_y = 0  # 垂直速度
         self.jump_power = 1.5  # 跳跃增量
-        self.jump_speedMax = -14  # 最大速度
+        self.jump_speedMax = -14.5  # 最大速度
         self.gravity = 1.4  # 重力加速度
 
         #状态
@@ -148,7 +148,13 @@ class Player:
         self.color = self.fcolor
 
 
+    def be_moved(self,dx=0,dy=0,must_y_move=True):
+        if dy>2 and self.current_platform and must_y_move:
+            self.pos[1] += dy/2
+            self.leave_platform()
 
+        self.pos[0] +=dx
+        self.pos[1] +=dy/2
 
         # TODO
         pass

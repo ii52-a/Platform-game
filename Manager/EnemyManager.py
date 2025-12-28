@@ -23,14 +23,7 @@ class EnemyManager:
             ))(self.screen,self.player,self.trapManager,self.platform,self))
             self.enemy_counter =0
         # print(Rule.get_stage())
-        if Rule.get_stage() == 5 and self.Boss[0]:
-            Rule.boss_stage = 1
-            self.Boss[0] = False
-            self.create_enemy(BlackHole(self.screen, self.player, self.trapManager, self.platform,self))
-        elif Rule.get_stage() == 8 and self.Boss[1]:
-            Rule.if_boss = True
-            self.Boss[1] = False
-            self.create_enemy(IceBlue(self.screen, self.player, self.trapManager, self.platform,self))
+        self.create_boss()
         for p in self.enemies[:]:
             if p.effect:
                 self.effects.extend(p.effect)
@@ -50,6 +43,16 @@ class EnemyManager:
             i.draw()
         for e in self.effects:
             e.draw(self.screen)
+
+    def create_boss(self):
+        if Rule.get_stage() == 5 and self.Boss[0]:
+            Rule.boss_stage = 1
+            self.Boss[0] = False
+            self.create_enemy(BlackHole(self.screen, self.player, self.trapManager, self.platform,self))
+        elif Rule.get_stage() == 8 and self.Boss[1]:
+            Rule.if_boss = True
+            self.Boss[1] = False
+            self.create_enemy(IceBlue(self.screen, self.player, self.trapManager, self.platform,self))
 
     def create_enemy(self, ad):
         self.enemies.append(ad)
