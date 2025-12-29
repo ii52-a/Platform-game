@@ -8,6 +8,9 @@ class Rule:
     stage = 1
     boss_stage=0
     if_boss=False
+    is_nexus=False
+    nexus_world=""
+    nexus_world_color=()
     @classmethod
     def get_stage(cls):
         # print(cls.stage)
@@ -29,29 +32,41 @@ class Rule:
             cls.stage = 6
         elif score <= 22000:
             cls.stage = 7
-        elif score <= 50000:
+        elif score <= 30000:
             cls.stage = 8
-    def world_get(self):
-        if self.stage == 1:
+        elif score <= 75000 and not cls.if_boss:
+            cls.stage = 9
+
+    @classmethod
+    def world_get(cls):
+        if cls.is_nexus:
+            return cls.nexus_world,(0,0,0)
+        if cls.stage == 1:
             return "白昼",(136, 137, 144)
-        elif self.stage == 2:
+        elif cls.stage == 2:
             return "阴影",(176, 179, 200)
-        elif self.stage == 3:
+        elif cls.stage == 3:
             return "起源",(59, 59, 59)
-        elif self.stage == 4:
+        elif cls.stage == 4:
             return "希望",(76, 76, 76)
-        elif self.stage == 5:
+        elif cls.stage == 5:
             return "红色黑洞",(255, 29, 29)
-        elif self.stage == 6:
+        elif cls.stage == 6:
             return "炼狱",(255, 35, 29)
-        elif self.stage == 7:
+        elif cls.stage == 7:
             return "浅蓝",(36, 233, 255)
-        elif self.stage == 8:
+        elif cls.stage == 8:
             return "深蓝之海",(50, 71, 255)
-        elif self.stage == 9:
+        elif cls.stage == 9:
             return "迷惘-覆灭",(255, 29, 29)
         else:
             return "迷惘宇宙",(255, 29, 29)
+
+    @classmethod
+    def set_nexus(cls,world_name,world_color):
+        cls.is_nexus = True
+        cls.nexus_world = world_name
+        cls.nexus_world_color = world_color
 
     @classmethod
     def again(cls):
@@ -59,8 +74,8 @@ class Rule:
         cls.stage = 1
         cls.boss_stage = 0
         cls.if_boss = False
-    """地图变化"""
 
+    """地图变化"""
     @classmethod
     def bg_color_get(cls):
         #纯白
@@ -78,6 +93,9 @@ class Rule:
 
         #覆灭者
         fm_color=(10,10,10)
+
+        if cls.is_nexus:
+            return cls.nexus_world_color
         if cls.stage == 1 or cls.stage == 3:
             return simple_color
         elif cls.stage == 2:
@@ -116,6 +134,8 @@ class Rule:
             num= 1
         elif cls.stage <=8:  #深蓝之海
             num= 0
+        elif cls.stage <=9:
+            num= 0
         else:
             num= 9
         return num+Show.TRAP_ADD
@@ -143,29 +163,6 @@ class Rule:
             return 300
         else:
             return 400
-
-
-    @classmethod
-    def platform_create_rule(cls,listt):
-        """
-            SpUpPlatform, SpDownPlatform, SpFragilePlatform,SPICEPlatform,SPICEPlatformQ,
-        """
-        ot = []
-        if cls.stage == 1:
-            ot = [30, 35, 35]
-        elif cls.stage == 2:
-            ot = [20, 60, 20]
-        elif cls.stage == 3:
-            ot = [25, 50, 25]
-        elif cls.stage ==7:
-            ot = [10, 10, 10, 30, 40]
-        elif cls.stage == 8:
-            ot = [15, 15, 0, 40, 30]
-        else:
-            ot = [30, 40, 30]
-        if len(ot) < len(listt):
-            ot+=[0]*(len(listt)-len(ot))
-        return random.choices(population=listt, weights=ot, k=1)[0]()
 
 
 

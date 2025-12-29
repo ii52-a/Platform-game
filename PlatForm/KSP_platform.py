@@ -2,7 +2,7 @@
 import random
 
 from loop import rules
-from PlatForm.platform import Platform
+from PlatForm.Basic_Platform import Platform
 
 
 class PlatformKSP(Platform):  #定速定时块

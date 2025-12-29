@@ -5,11 +5,11 @@ import pygame
 from loop import rules
 from loop.Config import Screen
 from EffectGlobal import Global
-from Enemy.Enemy import Enemy
+from Enemy.Basic_Enemy import BasicEnemy
 from Effects import *
 
 
-class IceEnemy(Enemy):
+class IceEnemy(BasicEnemy):
     """
     冰怪物：
         技能：锁定平台一段时间后使其破碎，每次使用技能扣除10点生命
@@ -65,7 +65,7 @@ class IceEnemy(Enemy):
 
     def lock_break_platform(self):
         self.color =(81, 91, 235)
-        mint=min(2,len(self.platform.platforms)-2)
+        mint=max(0,len(self.platform.platforms)-2)
         while self.locked_platform is None or self.locked_platform.no_break:
             self.locked_platform=self.platform.platforms[random.randint(mint,len(self.platform.platforms)-1)]
         self.locked_platform.color=(87, 199, 255)

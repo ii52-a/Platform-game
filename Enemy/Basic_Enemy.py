@@ -6,7 +6,7 @@ from loop import message
 from loop.Config import Screen
 
 
-class Enemy:
+class BasicEnemy:
     def __init__(self, screen, player, traps, platform,enemy, x=None, y=None, width=50, height=50, radius=None,
                  color=(0, 0, 0)):
         self.generator = None

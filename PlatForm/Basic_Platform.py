@@ -9,14 +9,14 @@ rule = rules.Rule()
 
 
 class Platform:
-    def __init__(self, x=Screen.ScreenX, y=None,width=220, height=25, color=(100, 100, 100)):
+    def __init__(self, x=Screen.ScreenX, y=None ,width=220,speed_x=None,speed_y=None,no_dump=False,height=25, color=(100, 100, 100)):
         self.rule = rules.Rule()
         self.y = random.randint(100, 300) if y is None else y
         self.x = x
         self.rect = pygame.Rect(self.x, self.y, width, height)
         self.color = color
-        self.speed_x = 2.5 + self.rule.stage * 0.5  # 平台移动速度
-        self.speed_y = 1
+        self.speed_x = 2.5 + self.rule.stage * 0.5 if speed_x is None else speed_x  # 平台移动速度
+        self.speed_y = 1 if speed_y is None else speed_y
         self.is_active = True  # 平台是否可用
         self.width = width
         self.height = height
@@ -25,6 +25,7 @@ class Platform:
         self.last_pos = [self.rect.x, self.rect.y]
         self.player=None
         self.no_break=False
+        self.no_dump=no_dump
 
     def bind_player(self,player):
         self.player=player

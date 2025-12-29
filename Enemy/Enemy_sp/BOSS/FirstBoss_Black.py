@@ -1,10 +1,10 @@
 import math
 import random
-import threading
 
 import pygame
 
 from Effects.LineEffect import LightningEffect
+from Enemy.Basic_Enemy import BasicEnemy
 from Manager.PlatFormGenerator import SimpleGenerator
 from Manager.PlatFormGenerator.Boss_Blackhole_Pgenerator import BlackHoleGenerator
 from loop import rules
@@ -12,10 +12,10 @@ from EffectGlobal import Global
 from Effects import BossDeathEffect
 from Trap import *
 from loop.Config import Config, Screen
-from Enemy import Enemy, BlackEnemy
+from Enemy import *
 
 
-class BlackHole(Enemy):
+class BlackHole(BasicEnemy):
     """
     第一boss-黑洞
         使用光环扩散，触碰到玩家将发射激光，伤害2
@@ -57,11 +57,12 @@ class BlackHole(Enemy):
 
         #启用特殊阶段平台生成
         self.use_sp_platform_generator(BlackHoleGenerator)
+        rules.Rule.if_boss = True
+        rules.Rule.boss_stage = 1
 
 
     def update(self):
-        rules.Rule.if_boss = True
-        rules.Rule.boss_stage = 1
+
         self.damage_counter += 1
         if self.damage_counter >= self.damage_time:
             self.health -= 30
@@ -71,7 +72,7 @@ class BlackHole(Enemy):
         if self.health <= 0:
             self.effect.append(BossDeathEffect(self.rect.centerx, self.rect.centery))
             self.is_alive = False
-            rules.Rule.if_boss = False
+            self._death()
         now=pygame.time.get_ticks()
         self.black_pop()
         if now-self.colortk >=200 and self.color !=self.fcolor:
@@ -124,13 +125,6 @@ class BlackHole(Enemy):
         self.trapManager.advance_create(Laser(screen=self.screen, player=self.player))
 
 
-    def __del__(self):
-        for _ in range(3):
-            self.trapManager.advance_create(Laser(screen=self.screen, player=self.player, if_advance_time=False))
-        for _ in range(10):
-            self.trapManager.advance_create(
-                LockLaser(screen=self.screen, player=self.player, if_advance_time=False))
-        self.use_sp_platform_generator(SimpleGenerator)
 
     def black_pop(self):
         if self.check_circle_collision((self.rect.x, self.rect.y), self.black_pop_radius,self.player.pos,self.player.radius):
@@ -167,3 +161,15 @@ class BlackHole(Enemy):
         draw_radius=self.black_pop_radius+(self.black_pop_radius-self.black_pop_nradius) //30
         pygame.draw.circle(self.screen,(255, 37, 37),(self.rect.x,self.rect.y),radius=draw_radius,width=2)
 
+
+    def _death(self):
+        for _ in range(3):
+            self.trapManager.advance_create(Laser(screen=self.screen, player=self.player, if_advance_time=False))
+        for _ in range(10):
+            self.trapManager.advance_create(
+                LockLaser(screen=self.screen, player=self.player, if_advance_time=False))
+        self.use_sp_platform_generator(SimpleGenerator)
+        rules.if_boss=False
+
+    def __del__(self):
+        rules.if_boss=False

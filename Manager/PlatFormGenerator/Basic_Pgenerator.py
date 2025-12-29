@@ -3,11 +3,13 @@ from abc import ABC, abstractmethod
 
 
 class Generator(ABC):
-    def __init__(self,platforms,rules):
+    def __init__(self,platformManager,rules):
         self.rules = rules
-        self.platforms = platforms
+        self.platformManager = platformManager
+        self.platforms = platformManager.platforms
         self.generator_counter = 0
         self.sp_once=True
+
 
     @abstractmethod
     def update(self):

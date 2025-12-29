@@ -3,11 +3,11 @@ import random
 
 
 from loop.Config import Screen
-from Enemy import Enemy
+from Enemy.Basic_Enemy import BasicEnemy
 from Effects import *
 
 
-class TreatEnemy(Enemy):
+class TreatEnemy(BasicEnemy):
     def __init__(self, screen, player, traps,enemy, platform, width=50, height=50, radius=None):
         y=random.randint(80,Screen.ScreenY//2)
         super().__init__(screen, player, traps, platform,y=y,width=width, height=height, radius=radius,

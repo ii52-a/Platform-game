@@ -48,7 +48,7 @@ class Config:
     SECONDE_BOSS_INTERNAL = 600
     #第一boss生命值
     #标准 300
-    FIRST_BOSS_HEALTH=300
+    FIRST_BOSS_HEALTH=90
 
     #第二boss生命值
-    SECOND_BOSS_HEALTH=400
+    SECOND_BOSS_HEALTH=0

@@ -8,5 +8,5 @@ from .SP_IceFragileQ_Platform import SPICEPlatformQ
 from .SP_Down_PlatForm import  SpDownPlatform
 from .SIP_RightMove_Platform import SIPrightMovePlatform
 from .SP_IceFragile_PlatForm import SPICEPlatform
-from .platform import Platform
-from .Player_Contal_platForm import PlatformControl
+from .Basic_Platform import Platform
+from .Basic_PlayerContal_platForm import PlatformControl

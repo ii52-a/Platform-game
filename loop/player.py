@@ -55,9 +55,9 @@ class Player:
 
     def left_right_limit(self):
         if self.pos[0] + self.radius >= Screen.ScreenX:
-            self.pos[0] = Screen.ScreenX - self.radius
+            self.pos[0] = Screen.ScreenX - self.radius-1
         elif self.pos[0] - self.radius <= 0:
-            self.pos[0] = 0 + self.radius
+            self.pos[0] = 1 + self.radius
 
 
     """离开平台，用于增加平台交互"""
@@ -66,7 +66,7 @@ class Player:
         if self.pos[1] - self.radius <=0:
             if self.is_grounded:
                 self.leave_platform()
-            self.pos[1] =0+self.radius
+            self.pos[1] =1+self.radius
     def leave_platform(self):
         self.current_platform.debind_player()
         self.current_platform.if_player = False
@@ -149,12 +149,13 @@ class Player:
 
 
     def be_moved(self,dx=0,dy=0,must_y_move=True):
-        if dy>2 and self.current_platform and must_y_move:
+        if dy>1 and self.current_platform and must_y_move:
             self.pos[1] += dy/2
             self.leave_platform()
 
         self.pos[0] +=dx
         self.pos[1] +=dy/2
+        self.left_right_limit()
 
         # TODO
         pass

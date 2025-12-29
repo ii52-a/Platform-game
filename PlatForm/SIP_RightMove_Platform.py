@@ -2,7 +2,7 @@
 import random
 
 from loop.Config import Screen
-from PlatForm.platform import Platform
+from PlatForm.Basic_Platform import Platform
 
 
 class SIPrightMovePlatform(Platform):

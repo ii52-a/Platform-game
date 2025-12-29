@@ -8,7 +8,7 @@ from loop import rules, message
 from loop.Config import Screen
 
 #初始平台
-from PlatForm.platform import Platform
+from PlatForm.Basic_Platform import Platform
 
 
 class PlatformControl(Platform):

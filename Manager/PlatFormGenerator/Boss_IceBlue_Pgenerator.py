@@ -31,4 +31,4 @@ class IceBlueGenerator(SimpleGenerator):
         self.boss_create_Platform(platform_list, ot_random)
 
     def __str__(self):
-        return "IceBlue_Generator"
+        return "IceBlue_PGenerator"

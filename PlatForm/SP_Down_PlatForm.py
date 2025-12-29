@@ -1,7 +1,7 @@
 """下降平台"""
 import random
 
-from PlatForm.platform import Platform, rule
+from PlatForm.Basic_Platform import Platform, rule
 
 
 class SpDownPlatform(Platform):

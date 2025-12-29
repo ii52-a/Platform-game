@@ -3,10 +3,12 @@ import random
 import pygame
 
 from EffectGlobal import Global
+from Effects.RecallWorld import RecallWorld
 from Manager import *
 
 from loop.Config import Screen, Version, Config, Show
 from PlatForm import PlatformFirst, PlatformControl
+from loop.stageControl import StageController
 from player import Player
 from loop.Event import Event
 from message import Message
@@ -17,6 +19,8 @@ class Game:
 
     def __init__(self):
         # 初始化pygame
+        self.recall = None
+        self.stage_control = None
         pygame.init()
         pygame.display.set_caption("Game")
         self.event = None
@@ -52,6 +56,7 @@ class Game:
         # 重新创建游戏规则和实例
         self.rule = Rule()
         self.rule.again()
+
         self.bg_color = self.rule.bg_color_get()
 
 
@@ -77,7 +82,16 @@ class Game:
 
         self.trapManager = TarpManager(player=self.player, screen=self.screen)
         self.enemyManager = EnemyManager(self.player, self.screen, self.trapManager, self.platformsManager)
-        self.event = Event(self.trapManager, self.screen)
+
+
+        self.stage_control=StageController(player=self.player,
+                                           platform_manager=self.platformsManager,
+                                           trap_manager=self.trapManager,
+                                           enemy_manager=self.enemyManager)
+        self.event = Event(self.trapManager, self.screen,stage_control=self.stage_control)
+
+        #预留世界动画
+        self.recall = RecallWorld(self.screen)
 
 
 
@@ -100,8 +114,9 @@ class Game:
                     self.player.is_downed()
 
             elif event.type == pygame.KEYDOWN and not Config.TEST_PLATFORM:
-                if event.key == pygame.K_s:
-                    self.player.down()
+                if event.key == pygame.K_s and self.player.current_platform:
+                    if not self.player.current_platform.no_dump:
+                        self.player.down()
 
     def update(self):
         """更新阶段变化"""
@@ -120,7 +135,7 @@ class Game:
                 self.player.pos[0] -=8
             elif keys[pygame.K_d]:
                 self.player.pos[0] += 8
-        else:
+        elif Global.is_recall !=1:
             if keys[pygame.K_w] or keys[pygame.K_SPACE]:
                 self.player.jump()
 
@@ -130,10 +145,9 @@ class Game:
                 self.player.move(self.player.speed)
         """平台和陷阱"""
         self.platformsManager.update()
-        self.trapManager.auto_create_tarp(180)
         self.trapManager.update()
         self.enemyManager.update()
-
+        self.stage_control.update()
         #阶段更替
         if self.now_stage != self.rule.stage:
             self.now_stage = self.rule.stage
@@ -161,12 +175,18 @@ class Game:
     def render(self):
         # 绘制背景
         self.game_canvas.fill(self.bg_color)
+        if not Global.is_recall:
 
-        self.player.draw(self.game_canvas)
-        self.platformsManager.draw_all_platforms(self.game_canvas)
-        self.trapManager.draw(self.game_canvas)
-        self.enemyManager.draw()
-        self.bg_color = self.rule.bg_color_get()
+            self.player.draw(self.game_canvas)
+            self.platformsManager.draw_all_platforms(self.game_canvas)
+            self.trapManager.draw(self.game_canvas)
+            self.enemyManager.draw()
+            self.bg_color = self.rule.bg_color_get()
+            self.render_debug_info()
+        elif Global.is_recall==1:
+
+            self.recall.update()
+
         # 震动参数
         offset_x = 0
         offset_y = 0
@@ -176,13 +196,15 @@ class Game:
         self._display.fill((0, 0, 0))
         self._display.blit(self.game_canvas, (offset_x, offset_y))
         # 显示信息
-        self.render_debug_info()
+
 
         # 更新显示
         pygame.display.flip()
 
     def render_debug_info(self):
         # 玩家信息
+
+        #TODO:专门的messageManager实现区域信息自动规划
         vel_text_status = []
         if Config.TEST_PLATFORM:
             vel_text_status.append("移动测试")
@@ -190,13 +212,13 @@ class Game:
             vel_text_status.append("免疫掉落")
         if Show.TRAP_ADD:
             vel_text_status.append("陷阱表演模式")
-        if Config.PLAYER_HEALTH>=10000:
-            vel_text_status.append("无限生命")
+        if Config.PLAYER_HEALTH>100:
+            vel_text_status.append("生命增强")
         vel_text_health = f"{Version.VERSION_STR}"
         vel_text_score = f" {self.event.score:.1f}"
         vel_text_stage = f"{self.rule.stage}"
         vel_text_history = f"{self.history_max}"
-        vel_text_generator=f"{self.platformsManager.generator}"
+        vel_text_generator=f"[{self.platformsManager.generator},{self.enemyManager.generator}]"
         vel_text_world=f"{self.rule.world_get()[0]}"
         vel_text_world_color=self.rule.world_get()[1]
         vel_height=10
@@ -204,7 +226,8 @@ class Game:
             nonlocal vel_height
             vel_height+=30
             return vel_height-30
-        self.message.font_draw('version:', vel_text_health, self._display, 10, vel_height_auto())
+        # self.message.font_draw('version:', vel_text_health, self._display, 10, vel_height_auto())
+        self.message.font_draw("Stage_control:",self.stage_control.mode, self._display, 10, vel_height_auto())
         self.message.font_draw("history:",vel_text_history,self._display,10,vel_height_auto())
         self.message.font_draw('status:', vel_text_status, self._display, 10, vel_height_auto())
         self.message.font_draw('world:',vel_text_world,self._display,10,vel_height_auto(),color=vel_text_world_color)

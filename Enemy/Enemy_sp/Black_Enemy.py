@@ -1,12 +1,12 @@
 from loop import rules
 from EffectGlobal import Global
 
-from Enemy import Enemy
+from Enemy import BasicEnemy
 from Trap import *
 from Effects import *
 
 
-class BlackEnemy(Enemy):
+class BlackEnemy(BasicEnemy):
     def __init__(self, screen, player, traps, platform,enemy,x=None, y=None,
                  health=40,width=50, height=50, radius=30):
         super().__init__(screen, player, traps, platform, width=width, height=height, radius=radius,
@@ -34,7 +34,7 @@ class BlackEnemy(Enemy):
             self.lack = LockLaser(screen=self.screen, player=self.player
                                                             ,color=(110, 110, 110),advance_timer=250,
                                                             damage=5,advance_color=(91, 91, 91))
-            self.trapManager.advance_tarps.append(self.lack)
+            self.trapManager.advance_traps.append(self.lack)
         self.apply_damage()
 
     def apply_damage(self):

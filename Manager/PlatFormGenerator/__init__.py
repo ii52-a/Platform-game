@@ -1,3 +1,3 @@
-from .simple_Pgenerator import SimpleGenerator
+from .Simple_Pgenerator import SimpleGenerator
 from .Boss_IceBlue_Pgenerator import IceBlueGenerator
-from .Pgenerator import Generator
+from .Basic_Pgenerator import Generator

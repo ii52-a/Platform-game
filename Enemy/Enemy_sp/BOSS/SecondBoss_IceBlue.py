@@ -5,13 +5,15 @@ import pygame
 
 from EffectGlobal import Global
 from Effects import CycleDeath
+from ..Ice_Enemy import IceEnemy
+from Enemy.Basic_Enemy import BasicEnemy
 from Manager.PlatFormGenerator import IceBlueGenerator, SimpleGenerator
 from loop import rules
 from loop.Config import Config, Screen, Show
-from Enemy import Enemy, IceEnemy
+
 
 """冰蓝"""
-class IceBlue(Enemy):
+class IceBlue(BasicEnemy):
     def __init__(self, screen, player, traps, platform,enemy):
         super().__init__(screen=screen, player=player, traps=traps, platform=platform,enemy=enemy)
         self.fhealth = Config.SECOND_BOSS_HEALTH
@@ -105,6 +107,7 @@ class IceBlue(Enemy):
         if self.health <= 0:
             self.is_alive = False
             rules.Rule.if_boss = False
+            self._del()
         now=pygame.time.get_ticks()
         if self.check_circle_collision(self.rect,self.radius,self.player.pos,self.player.radius) and now-self.damage_player_counter>=100:
             self.health -=2
@@ -264,7 +267,6 @@ class IceBlue(Enemy):
     def link_self_damage(self):
         self.health-=self.kc_self_damage
         self.damage_counter -= 20
-    def __del__(self):
+    def _del(self):
         self.use_sp_platform_generator(SimpleGenerator)
         rules.Rule.if_boss=False
-        rules.Rule.stage=9

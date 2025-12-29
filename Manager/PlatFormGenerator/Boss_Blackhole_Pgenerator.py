@@ -11,7 +11,6 @@ class BlackHoleGenerator(SimpleGenerator):
     def update(self):
         super().update()
         self.generator_boss_counter += 1
-        # print(self.generator_boss_counter)
         if self.generator_boss_counter >= self.generator_boss_interval:
             self.boss_exPlatform()
             self.generator_boss_counter = 0
@@ -32,4 +31,4 @@ class BlackHoleGenerator(SimpleGenerator):
         self.boss_create_Platform(platform_list,ot_random)
 
     def __str__(self):
-        return "BlueHole_Generator"
+        return "BlueHole_PGenerator"

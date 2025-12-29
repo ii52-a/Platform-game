@@ -1,5 +1,5 @@
 """易碎平台"""
-from PlatForm.platform import Platform
+from PlatForm.Basic_Platform import Platform
 
 
 class SpFragilePlatform(Platform):

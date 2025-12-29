@@ -2,7 +2,7 @@ import random
 
 from Manager.PlatFormGenerator import SimpleGenerator
 from loop import rules
-from PlatForm import *
+
 
 class PlatformsManager:
     def __init__(self):
@@ -11,7 +11,7 @@ class PlatformsManager:
         self.rules = rules.Rule()
 
         #规则内核
-        self.generator=SimpleGenerator(self.platforms,self.rules)
+        self.generator=SimpleGenerator(self,self.rules)
     #region
     def update(self):
         if not self.generator:
@@ -30,8 +30,7 @@ class PlatformsManager:
             else:
                 e.update()
     def update_generator(self,generator):
-        self.generator = generator(self.platforms,self.rules)
-        # print(self.generator)
+        self.generator = generator(self,self.rules)
 
     def draw_all_platforms(self, screen):
         for platform in self.platforms:

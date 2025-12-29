@@ -11,10 +11,10 @@ from EffectGlobal import Global
 from Effects import BossDeathEffect
 from Trap import *
 from loop.Config import Config, Screen
-from Enemy import Enemy, BlackEnemy
+from Enemy import BasicEnemy, BlackEnemy
 
 
-class MirageBound(Enemy):
+class MirageBound(BasicEnemy):
     """
     最终boss-迷惘 第一阶段:覆灭者 ParadoxEidolon
 

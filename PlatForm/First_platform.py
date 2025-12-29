@@ -1,5 +1,5 @@
 #初始平台
-from PlatForm.platform import Platform
+from PlatForm.Basic_Platform import Platform
 
 
 class PlatformFirst(Platform):

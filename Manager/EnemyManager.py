@@ -1,6 +1,4 @@
-from loop.rules import Rule
-from Enemy import *
-
+from Manager.EnemyGenerator.Simple_Egenerator import SimpleGenerator
 
 
 class EnemyManager:
@@ -10,20 +8,14 @@ class EnemyManager:
         self.player = player
         self.create_counter = 0
         self.screen = screen
-        self.enemy_counter = 0
-        self.Boss = [True,True]
         self.trapManager = traps
         self.platform = platform
 
+        self.generator=SimpleGenerator(self,self.player,self.screen,self.trapManager,self.platform)
+
     def update(self):
-        self.enemy_counter += 1
-        if self.enemy_counter >= Rule.create_enemy_time() and len(self.enemies)<=5:
-            self.enemies.append((Rule.create_enemy(
-                [TreatEnemy,BlackEnemy,IceEnemy]
-            ))(self.screen,self.player,self.trapManager,self.platform,self))
-            self.enemy_counter =0
+        self.generator.update()
         # print(Rule.get_stage())
-        self.create_boss()
         for p in self.enemies[:]:
             if p.effect:
                 self.effects.extend(p.effect)
@@ -44,18 +36,12 @@ class EnemyManager:
         for e in self.effects:
             e.draw(self.screen)
 
-    def create_boss(self):
-        if Rule.get_stage() == 5 and self.Boss[0]:
-            Rule.boss_stage = 1
-            self.Boss[0] = False
-            self.create_enemy(BlackHole(self.screen, self.player, self.trapManager, self.platform,self))
-        elif Rule.get_stage() == 8 and self.Boss[1]:
-            Rule.if_boss = True
-            self.Boss[1] = False
-            self.create_enemy(IceBlue(self.screen, self.player, self.trapManager, self.platform,self))
 
     def create_enemy(self, ad):
         self.enemies.append(ad)
+
+    def update_generator(self,generator):
+        self.generator=generator(self,self.player,self.screen,self.trapManager,self.platform)
 
     def check_collision(self, player_rect):
         for i in self.enemies:

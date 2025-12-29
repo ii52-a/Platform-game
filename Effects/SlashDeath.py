@@ -11,14 +11,14 @@ class SlashEffect:
         self.x, self.y = x, y
         self.color = color
         self.timer = 0
-        self.duration = 120  # 持续20帧
+        self.duration = 120  # 持续120帧
         self.is_active = True
 
 
 
-        # 刀光的随机角度
+        # 刀光-随机角度
         self.angle = random.randint(0, 180)
-        # 产生一些向四周炸裂的小火花
+        # 产生一些炸裂火花
         self.sparks = [
             {
                 "pos": [x, y],
@@ -29,7 +29,7 @@ class SlashEffect:
 
     def update(self):
         self.timer += 1
-        # 颗粒
+        # 碎力
         for s in self.sparks:
             s["pos"][0] += s["vel"][0]
             s["pos"][1] += s["vel"][1]
@@ -41,8 +41,8 @@ class SlashEffect:
     def draw(self, screen):
         if not self.is_active: return
 
-        # 1. 绘制“瞬时闪光”
-        offset = 60 * (1 - self.timer / self.duration)  # 线条随时间缩短
+        # 绘制闪光
+        offset = 60 * (1 - self.timer / self.duration)  # 线条
 
         # 刀光1
         p1 = (self.x - offset * math.cos(math.radians(self.angle)),
