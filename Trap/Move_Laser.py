@@ -4,6 +4,7 @@ from Trap import Laser
 
 
 class MoveLaser(Laser):
+
     def __init__(self, player, screen, speed_x=None,if_advance_time=True):
         super().__init__(player, screen)
         self.speed_x = random.randint(-1 * self.rule.stage, 1 * self.rule.stage) if speed_x is None else speed_x

@@ -29,7 +29,8 @@ class NexusGenerator(Generator):
         for i in self.platforms:
             i.is_active=False
             self.platformManager.effects.append(SlashEffect(i.rect.x,i.rect.y,(0,0,0)))
-        self.platforms.append(Platform(x=0,y=Screen.ScreenY-50,speed_y=0,speed_x=0,width=Screen.ScreenX,no_dump=True))
+        self.d_platform=Platform(x=0,y=Screen.ScreenY-50,speed_y=0,speed_x=0,width=Screen.ScreenX,no_dump=True)
+        self.platforms.append(self.d_platform)
         width=200   #总宽
         count = 5  #奇数个
         mid_x=Screen.ScreenX//2 -width//2  #中心点
@@ -56,3 +57,6 @@ class NexusGenerator(Generator):
 
     def __str__(self):
         return "Nexus圣所"
+
+    def __del__(self):
+        self.platforms.remove(self.d_platform)

@@ -1,4 +1,4 @@
-from Manager.EnemyGenerator.Simple_Egenerator import SimpleGenerator
+from Manager.EnemyGenerator.Simple_Egenerator import SimpleEGenerator
 
 
 class EnemyManager:
@@ -11,7 +11,7 @@ class EnemyManager:
         self.trapManager = traps
         self.platform = platform
 
-        self.generator=SimpleGenerator(self,self.player,self.screen,self.trapManager,self.platform)
+        self.generator=SimpleEGenerator(self,self.player,self.screen,self.trapManager,self.platform)
 
     def update(self):
         self.generator.update()

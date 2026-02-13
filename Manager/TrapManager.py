@@ -38,6 +38,9 @@ class TarpManager:
                 ad.if_advance_time=False
             ad.advance_draw()
 
+    def update_generator(self,generator):
+        self.generator=generator(self.screen, self.player, self.advance_traps, self.traps, self.rule)
+
     def advance_create(self,ad):
         self.generator.advance_create(ad)
 

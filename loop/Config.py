@@ -14,6 +14,9 @@ class Show:
     #增加冰蓝释放技能时的冰寒召唤数量
     ICE_BLUE_SUMMON_ADD=0
 
+    #跳过枢纽动画
+    SKIP_NEX=True
+
 class Config:
     #test 自移动平台,生成一个随玩家移动的平台代替初始平台
     #标准 False
@@ -41,14 +44,14 @@ class Config:
 
     #第一boss伤害间隔，可以加快阶段，用于测试
     #标准 400, 最低180
-    FIRST_BOSS_INTERNAL=400
+    FIRST_BOSS_INTERNAL=180
 
     #第二boss伤害间隔，可以加快阶段，用于测试
     #标准 600, 最低180
     SECONDE_BOSS_INTERNAL = 600
     #第一boss生命值
     #标准 300
-    FIRST_BOSS_HEALTH=90
+    FIRST_BOSS_HEALTH=60
 
     #第二boss生命值
     SECOND_BOSS_HEALTH=0

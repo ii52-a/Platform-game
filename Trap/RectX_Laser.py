@@ -6,11 +6,15 @@ from Trap.trap import Trap
 
 
 class RectXLaser(Trap):
-    def __init__(self, player, screen,if_advance_time=True):
+    def check_collision(self, player_rect):
+        super().check_collision(player_rect)
+
+    def __init__(self, player, screen,if_advance_time=True,speed_y=3,):
 
         self.if_advance_time =if_advance_time
         y = random.randint(20, self.screen_pos_height - 20)
         self.advance_tick=0
+        self.speed_y = speed_y
 
 
         super().__init__(
@@ -22,7 +26,7 @@ class RectXLaser(Trap):
             height=20,
             damage=10,
             color=(214, 212, 71),
-            speed_y=3
+            speed_y=self.speed_y
         )
 
         self.life_cycle = 75 + 5 * self.rule.stage

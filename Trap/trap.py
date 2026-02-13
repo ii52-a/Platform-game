@@ -1,4 +1,5 @@
 import random
+from abc import ABC, abstractmethod
 
 import pygame
 
@@ -7,13 +8,13 @@ from loop.Config import Screen
 from loop.message import Message
 
 
-class Trap:
+class Trap(ABC):
     """陷阱基类，所有陷阱的父类"""
     screen_pos_width = 1280
     screen_pos_height = 720
 
     def __init__(self, player, screen, x=None, y=0, width=20, height=Screen.ScreenY, damage=10, color=(128, 128, 128),
-                 speed_x=0, speed_y=0, ):
+                 speed_x=0, speed_y=0):
         self.x = random.randint(0, self.screen_pos_width) if x is None else x
         self.y = y
         self.rect = pygame.Rect(self.x, self.y, width, height)
@@ -42,17 +43,21 @@ class Trap:
         self.screen = screen
         self.advance_Timer = 60
 
+    @abstractmethod
     def update(self):
         """更新"""
         pass
 
+    @abstractmethod
     def draw(self, screen):
         """绘制"""
         pygame.draw.rect(screen, self.color, self.rect)
 
+
     def check_collision(self, player_rect):
         return self.is_active and self.rect.colliderect(player_rect)
 
+    @abstractmethod
     def apply_damage(self):
         pass
 

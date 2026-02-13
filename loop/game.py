@@ -1,9 +1,11 @@
+import ctypes
+import os
 import random
 
 import pygame
 
 from EffectGlobal import Global
-from Effects.RecallWorld import RecallWorld
+from World.RecallWorld import RecallWorld
 from Manager import *
 
 from loop.Config import Screen, Version, Config, Show
@@ -22,7 +24,6 @@ class Game:
         self.recall = None
         self.stage_control = None
         pygame.init()
-        pygame.display.set_caption("Game")
         self.event = None
         self.enemyManager = None
         self.trapManager = None
@@ -35,13 +36,13 @@ class Game:
         self.dt = None
         self.running = None
         #屏幕
-        self._display = pygame.display.set_mode((Screen.ScreenX, Screen.ScreenY), vsync=True)
+        self._display = pygame.display.set_mode((Screen.ScreenX, Screen.ScreenY),pygame.SCALED, vsync=True)
         #时刻钟
         self.clock = pygame.time.Clock()
         #历史
         self.history_max=0
         #屏幕位移 / 震屏打击
-        self.game_canvas = pygame.Surface((Screen.ScreenX, Screen.ScreenY))
+        self.game_canvas = pygame.Surface((Screen.ScreenX, Screen.ScreenY)).convert()
         self.screen=self.game_canvas
         self.shake_amount=0
 
@@ -88,7 +89,8 @@ class Game:
                                            platform_manager=self.platformsManager,
                                            trap_manager=self.trapManager,
                                            enemy_manager=self.enemyManager)
-        self.event = Event(self.trapManager, self.screen,stage_control=self.stage_control)
+        self.event = Event()
+        self.event.set( self.screen,stage_control=self.stage_control)
 
         #预留世界动画
         self.recall = RecallWorld(self.screen)
@@ -176,16 +178,15 @@ class Game:
         # 绘制背景
         self.game_canvas.fill(self.bg_color)
         if not Global.is_recall:
-
             self.player.draw(self.game_canvas)
             self.platformsManager.draw_all_platforms(self.game_canvas)
             self.trapManager.draw(self.game_canvas)
             self.enemyManager.draw()
             self.bg_color = self.rule.bg_color_get()
-            self.render_debug_info()
-        elif Global.is_recall==1:
 
+        elif Global.is_recall==1:
             self.recall.update()
+
 
         # 震动参数
         offset_x = 0
@@ -196,7 +197,8 @@ class Game:
         self._display.fill((0, 0, 0))
         self._display.blit(self.game_canvas, (offset_x, offset_y))
         # 显示信息
-
+        if Global.is_recall!=1:
+           self.render_debug_info()
 
         # 更新显示
         pygame.display.flip()
@@ -214,11 +216,10 @@ class Game:
             vel_text_status.append("陷阱表演模式")
         if Config.PLAYER_HEALTH>100:
             vel_text_status.append("生命增强")
-        vel_text_health = f"{Version.VERSION_STR}"
         vel_text_score = f" {self.event.score:.1f}"
         vel_text_stage = f"{self.rule.stage}"
         vel_text_history = f"{self.history_max}"
-        vel_text_generator=f"[{self.platformsManager.generator},{self.enemyManager.generator}]"
+        vel_text_generator=f"[{self.platformsManager.generator},{self.enemyManager.generator}，{self.trapManager.generator}]"
         vel_text_world=f"{self.rule.world_get()[0]}"
         vel_text_world_color=self.rule.world_get()[1]
         vel_height=10
@@ -237,10 +238,15 @@ class Game:
 
     def run(self):
         while self.running:
+
             self.handle_events()
             self.update()
             self.render()
             self.dt = self.clock.tick(60) / 1000
+
+
+
+
 
 
         pygame.quit()

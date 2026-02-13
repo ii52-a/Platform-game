@@ -68,6 +68,12 @@ class Rule:
         cls.nexus_world = world_name
         cls.nexus_world_color = world_color
 
+
+    @classmethod
+    def out_nexus(cls):
+        cls.is_nexus = False
+
+
     @classmethod
     def again(cls):
         cls.score = 0

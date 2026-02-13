@@ -1,0 +1,34 @@
+import pygame
+
+
+
+
+
+class CycleScreenShield:
+    """
+    圆波扩散
+    """
+    def __init__(self, x, y,
+                 color=(32, 32, 238),max_radius=90,speed=3,
+                 func=None
+                 ):
+        self.x = x
+        self.y = y
+        self.color = color
+        self.radius = 5
+        self.max_radius = max_radius  # 扩散多大
+        self.speed = speed  # 扩散多快
+        self.is_active = True
+        self.func=func
+
+    def update(self):
+        self.radius += self.speed
+
+        if self.radius >= self.max_radius:
+            self.is_active = False
+
+    def draw(self, screen):
+        if self.is_active:
+            pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.radius)
+
+    

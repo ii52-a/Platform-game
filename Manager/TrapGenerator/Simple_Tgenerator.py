@@ -25,6 +25,6 @@ class SimpleTgenerator(Generator):
 
 
 
-
-
+    def __str__(self):
+        return "SimpleTgenerator"
 

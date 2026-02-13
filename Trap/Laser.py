@@ -5,7 +5,7 @@ from Trap.trap import Trap
 
 
 class Laser(Trap):
-    def __init__(self, player, screen, x=None, y=0, width=20, height=Screen.ScreenY, damage=10, color=(214, 212, 71),if_advance_time=True):
+    def __init__(self, player, screen, width=20, height=Screen.ScreenY, damage=10, color=(214, 212, 71),if_advance_time=True):
         self.color = color
         super().__init__(player=player, color=self.color, screen=screen, width=width, height=height, damage=damage)
         self.life_cycle = 60 + 2 * self.rule.stage

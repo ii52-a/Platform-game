@@ -149,12 +149,11 @@ class Player:
 
 
     def be_moved(self,dx=0,dy=0,must_y_move=True):
-        if dy>1 and self.current_platform and must_y_move:
-            self.pos[1] += dy/2
+        if abs(dy)>1 and self.current_platform and must_y_move:
             self.leave_platform()
 
         self.pos[0] +=dx
-        self.pos[1] +=dy/2
+        self.pos[1] +=dy
         self.left_right_limit()
 
         # TODO

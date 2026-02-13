@@ -4,25 +4,34 @@ from loop.Config import Config
 
 
 class Event:
-    score = Config.INIT_SCORE
+    time = 0
+    score_time_get = 0
+    score_time = 80 - Rule.stage * 5
+    stage_control = None
+    screen = None
+    player = None
+    score=Config.INIT_SCORE
 
-    def __init__(self, screen, player,stage_control):
-        self.time = 0
-        self.score_time_get = 0
-        self.score_time = 80 - Rule.stage * 5
-        self.stage_control = stage_control
-        self.screen = screen
-        self.player = player
+    @classmethod
+    def set(cls,screen,stage_control):
+        cls.time = 0
+        cls.score_time_get = 0
+        cls.score_time = 80 - Rule.stage * 5
+        cls.stage_control = stage_control
+        cls.screen = screen
+        cls.score = Config.INIT_SCORE
 
-    def score_gain(self, score_get):
-        if self.stage_control.mode!="nexus":
-            self.score_time_get += 1
-            if self.score_time_get > self.score_time:
-                self.score_time_get = 0
-                self.score += score_get * Rule.stage +Config.EXTRA_SCORE
-                Rule.stage_change(self.score)
+    @classmethod
+    def score_gain(cls, score_get):
+        if cls.stage_control.mode!="nexus":
+            cls.score_time_get += 1
+            if cls.score_time_get > cls.score_time:
+                cls.score_time_get = 0
+                cls.score += score_get * Rule.stage +Config.EXTRA_SCORE
+                Rule.stage_change(cls.score)
 
-    def game_over(self, health):
+    @staticmethod
+    def game_over(health):
         if health <= 0:
             return True
         return None

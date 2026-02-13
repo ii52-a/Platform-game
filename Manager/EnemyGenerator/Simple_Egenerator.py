@@ -3,7 +3,7 @@ from Enemy import *
 from loop.rules import Rule
 
 
-class SimpleGenerator(Generator):
+class SimpleEGenerator(Generator):
     def __init__(self,enemies,player,screen,trapManager,platform):
         super().__init__(enemies,player=player,screen=screen,trapManager=trapManager,platform=platform)
     def update(self):
@@ -11,6 +11,7 @@ class SimpleGenerator(Generator):
         if self.generator_counter >= self.generator_interval:
             self.generator_counter = 0
             self.generate()
+
 
 
     def generate(self):
